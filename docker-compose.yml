@@ -1,7 +1,7 @@
 services:
-  redis:
+  confess-redis:
     image: redis:7-alpine
-    container_name: confess_redis
+    container_name: confess-redis
     restart: always
     ports:
       - "6379:6379"
@@ -13,12 +13,12 @@ services:
       timeout: 3s
       retries: 5
 
-  bot:
+  confess:
     build: .
-    container_name: confess_bot
+    container_name: confess
     restart: always
     depends_on:
-      redis:
+      confess-redis:
         condition: service_healthy
     env_file:
       - .env
