@@ -33,7 +33,7 @@ class HelpCog(commands.Cog, name="Help"):
 
 **Features:**
 • **Anonymous Confessions** - Submit secrets completely anonymously
-• **Confession Buttons** - Quick confess and reply options on each post
+• **Confession Buttons** - Confess, reply, or report on each post
 • **Reply Threads** - Create discussion threads for confessions
 • **Content Filter** - Block specific words from confessions
 • **Review System** - Optional moderator approval before posting

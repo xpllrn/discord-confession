@@ -31,6 +31,7 @@ class DatabaseManager:
                     guild_id INTEGER NOT NULL,
                     confession_num INTEGER NOT NULL,
                     content TEXT NOT NULL,
+                    author_id INTEGER,
                     channel_id INTEGER,
                     message_id INTEGER,
                     status TEXT DEFAULT 'pending',
@@ -47,6 +48,30 @@ class DatabaseManager:
                     PRIMARY KEY (guild_id, channel_id, message_id)
                 )
             """)
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS replies (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    guild_id INTEGER NOT NULL,
+                    confession_num INTEGER NOT NULL,
+                    reply_num INTEGER NOT NULL,
+                    content TEXT NOT NULL,
+                    author_id INTEGER NOT NULL,
+                    status TEXT DEFAULT 'pending',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # Migrations for older databases
+            async with db.execute("PRAGMA table_info(confessions)") as cursor:
+                columns = {row[1] for row in await cursor.fetchall()}
+            if "author_id" not in columns:
+                await db.execute("ALTER TABLE confessions ADD COLUMN author_id INTEGER")
+
+            await db.execute(
+                "CREATE UNIQUE INDEX IF NOT EXISTS idx_confessions_guild_num "
+                "ON confessions(guild_id, confession_num)"
+            )
+
             await db.commit()
             logger.info("Database initialized successfully.")
 
@@ -130,14 +155,111 @@ class DatabaseManager:
             """, (guild_id, words_json))
             await db.commit()
 
-    async def create_confession(self, guild_id: int, confession_num: int, content: str, status: str = 'pending') -> int:
+    async def create_confession(
+        self,
+        guild_id: int,
+        confession_num: int,
+        content: str,
+        author_id: int,
+        status: str = "pending",
+    ) -> int:
         async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute("""
-                INSERT INTO confessions (guild_id, confession_num, content, status)
-                VALUES (?, ?, ?, ?)
-            """, (guild_id, confession_num, content, status))
+                INSERT INTO confessions (guild_id, confession_num, content, author_id, status)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(guild_id, confession_num) DO UPDATE SET
+                    content = excluded.content,
+                    author_id = excluded.author_id,
+                    status = excluded.status
+            """, (guild_id, confession_num, content, author_id, status))
             await db.commit()
             return cursor.lastrowid
+
+    async def update_confession_status(self, guild_id: int, confession_num: int, status: str):
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                "UPDATE confessions SET status = ? WHERE guild_id = ? AND confession_num = ?",
+                (status, guild_id, confession_num),
+            )
+            await db.commit()
+
+    async def get_confession(self, guild_id: int, confession_num: int) -> Optional[Dict[str, Any]]:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("""
+                SELECT confession_num, content, author_id, status, created_at
+                FROM confessions
+                WHERE guild_id = ? AND confession_num = ?
+            """, (guild_id, confession_num)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    return None
+                return {
+                    "confession_num": row[0],
+                    "content": row[1],
+                    "author_id": row[2],
+                    "status": row[3],
+                    "created_at": row[4],
+                    "guild_id": guild_id,
+                }
+
+    async def next_reply_num(self, guild_id: int, confession_num: int) -> int:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("""
+                SELECT COALESCE(MAX(reply_num), 0) + 1 FROM replies
+                WHERE guild_id = ? AND confession_num = ?
+            """, (guild_id, confession_num)) as cursor:
+                row = await cursor.fetchone()
+                return row[0] if row else 1
+
+    async def create_reply(
+        self,
+        guild_id: int,
+        confession_num: int,
+        reply_num: int,
+        content: str,
+        author_id: int,
+        status: str = "pending",
+    ) -> int:
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute("""
+                INSERT INTO replies (guild_id, confession_num, reply_num, content, author_id, status)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (guild_id, confession_num, reply_num, content, author_id, status))
+            await db.commit()
+            return cursor.lastrowid
+
+    async def update_reply_status(
+        self, guild_id: int, confession_num: int, reply_num: int, status: str
+    ):
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                """UPDATE replies SET status = ?
+                   WHERE guild_id = ? AND confession_num = ? AND reply_num = ?""",
+                (status, guild_id, confession_num, reply_num),
+            )
+            await db.commit()
+
+    async def get_reply(
+        self, guild_id: int, confession_num: int, reply_num: int
+    ) -> Optional[Dict[str, Any]]:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("""
+                SELECT reply_num, content, author_id, status, created_at
+                FROM replies
+                WHERE guild_id = ? AND confession_num = ? AND reply_num = ?
+            """, (guild_id, confession_num, reply_num)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    return None
+                return {
+                    "reply_num": row[0],
+                    "content": row[1],
+                    "author_id": row[2],
+                    "status": row[3],
+                    "created_at": row[4],
+                    "guild_id": guild_id,
+                    "confession_num": confession_num,
+                }
 
     async def track_confession_message(self, guild_id: int, channel_id: int, message_id: int, confession_num: int):
         async with aiosqlite.connect(self.db_path) as db:
