@@ -30,4 +30,3 @@ services:
 volumes:
   redis_data:
   bot_data:
-w
