@@ -241,14 +241,28 @@ class PanelCog(commands.Cog, name="Panel"):
     @app_commands.command(name="panel", description="Open the confession bot customization panel")
     @app_commands.checks.has_permissions(administrator=True)
     async def panel(self, interaction: discord.Interaction):
-        await self.send_panel(interaction)
+        try:
+            await self.send_panel(interaction)
+        except Exception as e:
+            import logging
+            from ui_helpers import schedule_error_report
+
+            logging.getLogger(__name__).exception("Failed to send /panel LayoutView")
+            schedule_error_report(self.bot, e, interaction, "panel")
+            if not interaction.response.is_done():
+                await interaction.response.send_message(
+                    "❌ Panel failed to load. Rebuild the bot: `docker compose up -d --build confess`",
+                    ephemeral=True,
+                )
 
     @panel.error
     async def panel_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.MissingPermissions):
-            err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay("❌ You need **Administrator** permissions to use `/panel`.")))
-            await interaction.response.send_message(view=err_view, ephemeral=True)
+            if not interaction.response.is_done():
+                await interaction.response.send_message(
+                    "❌ You need **Administrator** permissions to use `/panel`.",
+                    ephemeral=True,
+                )
 
 async def setup(bot):
     await bot.add_cog(PanelCog(bot))

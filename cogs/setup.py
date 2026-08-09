@@ -158,15 +158,29 @@ class SetupCog(commands.Cog, name="Setup"):
     @app_commands.command(name="setup", description="Walk through setting up the Confession bot channels and configuration")
     @app_commands.checks.has_permissions(administrator=True)
     async def setup(self, interaction: discord.Interaction):
-        view = ConfessionChannelsSelectView(self.bot)
-        await interaction.response.send_message(view=view)
+        try:
+            view = ConfessionChannelsSelectView(self.bot)
+            await interaction.response.send_message(view=view)
+        except Exception as e:
+            logger.exception("Failed to send /setup LayoutView")
+            from ui_helpers import schedule_error_report
+
+            schedule_error_report(self.bot, e, interaction, "setup")
+            if not interaction.response.is_done():
+                await interaction.response.send_message(
+                    "❌ Setup UI failed to load. Rebuild the bot image so discord.py 2.6+ is installed:\n"
+                    "`docker compose up -d --build confess`",
+                    ephemeral=True,
+                )
 
     @setup.error
     async def setup_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.MissingPermissions):
-            err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay("❌ You need **Administrator** permissions to run `/setup`.")))
-            await interaction.response.send_message(view=err_view, ephemeral=True)
+            if not interaction.response.is_done():
+                await interaction.response.send_message(
+                    "❌ You need **Administrator** permissions to run `/setup`.",
+                    ephemeral=True,
+                )
 
 async def setup(bot):
     await bot.add_cog(SetupCog(bot))

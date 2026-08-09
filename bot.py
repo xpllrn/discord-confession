@@ -7,7 +7,7 @@ from discord.ext import commands
 from config import Config
 from database import DatabaseManager
 from cache import CacheManager
-from logutil import send_error_report
+from ui_helpers import respond_interaction_error, schedule_error_report
 
 logging.basicConfig(
     level=logging.INFO,
@@ -52,47 +52,23 @@ class ConfessionBot(commands.Bot):
 
         @self.tree.error
         async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
-            # Unwrap CommandInvokeError
             original = getattr(error, "original", error)
             command_name = interaction.command.name if interaction.command else "unknown"
-
-            # Unknown interaction (10062) — too late to respond; still log it
             is_unknown = getattr(original, "code", None) == 10062 or "10062" in str(original)
 
-            logger.error(
-                f"App command error in command '{command_name}': {error}",
-                exc_info=error,
-            )
-            await send_error_report(
+            # Respond immediately — never block on log channel I/O (causes "application did not respond")
+            if not is_unknown and not interaction.response.is_done():
+                await respond_interaction_error(
+                    interaction,
+                    f"❌ An error occurred: {original}",
+                )
+
+            schedule_error_report(
                 self,
                 original if isinstance(original, BaseException) else error,
-                user_id=interaction.user.id if interaction.user else None,
-                guild_id=interaction.guild_id,
+                interaction=interaction,
                 command_used=command_name,
-                channel_id=Config.ERROR_LOG_CHANNEL_ID,
             )
-
-            if is_unknown or interaction.response.is_done():
-                return
-
-            try:
-                from discord.ui import LayoutView, Container, TextDisplay
-                err_view = LayoutView()
-                err_view.add_item(Container(TextDisplay(f"❌ An error occurred: {original}")))
-                await interaction.response.send_message(view=err_view, ephemeral=True)
-            except Exception as send_err:
-                logger.error(f"Failed to send error response: {send_err}")
-                try:
-                    await send_error_report(
-                        self,
-                        send_err,
-                        user_id=interaction.user.id if interaction.user else None,
-                        guild_id=interaction.guild_id,
-                        command_used=f"{command_name}_error_response",
-                        channel_id=Config.ERROR_LOG_CHANNEL_ID,
-                    )
-                except Exception:
-                    pass
 
         logger.info("Syncing slash commands...")
         try:

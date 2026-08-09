@@ -12,12 +12,11 @@ logger = logging.getLogger(__name__)
 def is_bot_owner():
     async def predicate(interaction: discord.Interaction) -> bool:
         if not Config.BOT_OWNER_ID or interaction.user.id != Config.BOT_OWNER_ID:
-            err_view = LayoutView()
-            err_view.add_item(Container(
-                TextDisplay("❌ This command is restricted to the bot owner.")
-            ))
             if not interaction.response.is_done():
-                await interaction.response.send_message(view=err_view, ephemeral=True)
+                await interaction.response.send_message(
+                    "❌ This command is restricted to the bot owner.",
+                    ephemeral=True,
+                )
             return False
         return True
 

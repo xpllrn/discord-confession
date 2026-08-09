@@ -5,23 +5,14 @@ from discord.ext import commands
 from discord.ui import LayoutView, Container, TextDisplay, Separator, Button, Modal, TextInput
 
 from config import Config
-from logutil import send_error_report, send_guild_activity_log, send_report_log
+from logutil import send_guild_activity_log, send_report_log
+from ui_helpers import respond_interaction_error, schedule_error_report
 
 logger = logging.getLogger(__name__)
 
 
 async def _report_error(bot, error: Exception, interaction: discord.Interaction = None, command_used: str = "unknown"):
-    logger.error(f"{command_used}: {error}", exc_info=error)
-    user_id = interaction.user.id if interaction else None
-    guild_id = interaction.guild_id if interaction else None
-    await send_error_report(
-        bot,
-        error,
-        user_id=user_id,
-        guild_id=guild_id,
-        command_used=command_used,
-        channel_id=Config.ERROR_LOG_CHANNEL_ID,
-    )
+    schedule_error_report(bot, error, interaction, command_used)
 
 
 class ReportModal(Modal, title="Report Confession"):
@@ -734,12 +725,10 @@ class ConfessionsCog(commands.Cog, name="Confessions"):
             await interaction.response.send_modal(modal)
         except Exception as e:
             await _report_error(self.bot, e, interaction, "confess")
-            if not interaction.response.is_done():
-                err_view = LayoutView()
-                err_view.add_item(Container(
-                    TextDisplay("❌ Could not open confession form. Please try again.")
-                ))
-                await interaction.response.send_message(view=err_view, ephemeral=True)
+            await respond_interaction_error(
+                interaction,
+                "❌ Could not open confession form. Please try again.",
+            )
 
 
 async def setup(bot):

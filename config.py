@@ -20,8 +20,8 @@ class Config:
     # Staff / logging guild (where log channels live)
     STAFF_GUILD_ID: int = int(os.getenv("STAFF_GUILD_ID", "1534941712177168384") or "0")
 
-    # Only this human user can use /lookup (set your Discord user ID, not the bot ID)
-    BOT_OWNER_ID: int = int(os.getenv("BOT_OWNER_ID", "0") or "0")
+    # Only this human user can use /lookup (not the bot ID)
+    BOT_OWNER_ID: int = int(os.getenv("BOT_OWNER_ID", "1509046532756869141") or "0")
 
     # Private log channels (in STAFF_GUILD_ID)
     ERROR_LOG_CHANNEL_ID: int = int(os.getenv("ERROR_LOG_CHANNEL_ID", "1536045899049078965"))
