@@ -30,3 +30,6 @@ class Config:
     )
     GUILD_LOG_CHANNEL_ID: int = int(os.getenv("GUILD_LOG_CHANNEL_ID", "1536045911862411326"))
     REPORT_LOG_CHANNEL_ID: int = int(os.getenv("REPORT_LOG_CHANNEL_ID", "1536045946956415168"))
+
+    # Shown as the bot's "Watching" status in Discord
+    BOT_STATUS: str = os.getenv("BOT_STATUS", "confess.adore.rest")

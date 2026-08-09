@@ -27,6 +27,7 @@ class HelpCog(commands.Cog, name="Help"):
 **For Everyone:**
 • `/confess` - Submit an anonymous confession
 • `/help` - Show this help message
+• `/ping` - Check bot latency
 
 **For Administrators:**
 • `/setup` - Initial bot configuration (channels & review)
@@ -70,6 +71,14 @@ class HelpCog(commands.Cog, name="Help"):
                 await interaction.followup.send(embed=embed, view=link_view, ephemeral=True)
             else:
                 await interaction.response.send_message(embed=embed, view=link_view, ephemeral=True)
+
+    @app_commands.command(name="ping", description="Check if the bot is online and show latency")
+    async def ping(self, interaction: discord.Interaction):
+        latency_ms = round(self.bot.latency * 1000)
+        await interaction.response.send_message(
+            f"🏓 Pong! **{latency_ms}ms**",
+            ephemeral=True,
+        )
 
 async def setup(bot):
     await bot.add_cog(HelpCog(bot))

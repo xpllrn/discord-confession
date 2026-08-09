@@ -78,7 +78,15 @@ class ConfessionBot(commands.Bot):
             logger.error(f"Failed to sync slash commands: {e}")
 
     async def on_ready(self):
+        await self.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.watching,
+                name=Config.BOT_STATUS,
+            ),
+            status=discord.Status.online,
+        )
         logger.info(f"Logged in as {self.user} (ID: {self.user.id})")
+        logger.info(f"Status set to Watching {Config.BOT_STATUS}")
         logger.info("Bot is ready and active!")
         if not Config.BOT_OWNER_ID:
             logger.warning("BOT_OWNER_ID is not set — /lookup will deny everyone.")
