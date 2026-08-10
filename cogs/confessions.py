@@ -352,7 +352,7 @@ class ReplyReviewActionView(LayoutView):
             )
 
             rev_container = Container(
-                TextDisplay(f"## {APPROVE} Approved Reply #{self.reply_num}\n\nApproved by {interaction.user.mention}"),
+                TextDisplay(f"## {APPROVE} Approved Reply #{self.reply_num}\n\n-# Approved by {interaction.user.mention}"),
                 Separator(),
                 TextDisplay(f"{self.content_text}"),
             )
@@ -372,7 +372,7 @@ class ReplyReviewActionView(LayoutView):
                 self.guild_id, self.confession_num, self.reply_num, "rejected"
             )
             rev_container = Container(
-                TextDisplay(f"## {DENY} Rejected Reply #{self.reply_num}\n\nRejected by {interaction.user.mention}"),
+                TextDisplay(f"## {DENY} Rejected Reply #{self.reply_num}\n\n-# Rejected by {interaction.user.mention}"),
                 Separator(),
                 TextDisplay(f"{self.content_text}"),
             )
@@ -472,7 +472,7 @@ class ReviewActionView(LayoutView):
             await self.bot.db.update_confession_status(guild_id, self.confession_num, "approved")
 
             rev_container = Container(
-                TextDisplay(f"## {APPROVE} Approved Confession #{self.confession_num}\n\nApproved by {interaction.user.mention}"),
+                TextDisplay(f"## {APPROVE} Approved Confession #{self.confession_num}\n\n-# Approved by {interaction.user.mention}"),
                 Separator(),
                 TextDisplay(f"{self.content_text}"),
             )
@@ -492,7 +492,7 @@ class ReviewActionView(LayoutView):
                 interaction.guild_id, self.confession_num, "rejected"
             )
             rev_container = Container(
-                TextDisplay(f"## {DENY} Rejected Confession #{self.confession_num}\n\nRejected by {interaction.user.mention}"),
+                TextDisplay(f"## {DENY} Rejected Confession #{self.confession_num}\n\n-# Rejected by {interaction.user.mention}"),
                 Separator(),
                 TextDisplay(f"{self.content_text}"),
             )

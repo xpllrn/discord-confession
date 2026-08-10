@@ -132,7 +132,7 @@ class AddWordModal(Modal, title="Add Blocked Words"):
     words_input = TextInput(
         label="Words to Block",
         style=discord.TextStyle.short,
-        placeholder="Enter words separated by commas (e.g. badword, spam, test)",
+        placeholder="Enter words separated by commas (like.. badword, spam, test)",
         required=True,
         max_length=500,
     )
