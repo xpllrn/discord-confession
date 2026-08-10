@@ -4,6 +4,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord.ui import LayoutView, Container, TextDisplay, Separator, Button
 from config import Config
+from emojis import STAR
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class HelpCog(commands.Cog, name="Help"):
 
         try:
             container = Container(
-                TextDisplay("# 🕵️ Anonymous Confession Bot"),
+                TextDisplay("# Anonymous Confession Bot"),
                 Separator(),
                 TextDisplay(commands_text),
                 Separator(),
@@ -61,7 +62,7 @@ class HelpCog(commands.Cog, name="Help"):
 
             schedule_error_report(self.bot, e, interaction, "help")
             embed = discord.Embed(
-                title="🕵️ Anonymous Confession Bot",
+                title="Anonymous Confession Bot",
                 description=commands_text,
                 color=discord.Color.blurple(),
             )
@@ -76,7 +77,7 @@ class HelpCog(commands.Cog, name="Help"):
     async def ping(self, interaction: discord.Interaction):
         latency_ms = round(self.bot.latency * 1000)
         await interaction.response.send_message(
-            f"🏓 Pong! **{latency_ms}ms**",
+            f"{STAR} Pong! **{latency_ms}ms**",
             ephemeral=True,
         )
 

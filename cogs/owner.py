@@ -5,6 +5,7 @@ from discord.ext import commands
 from discord.ui import LayoutView, Container, TextDisplay, Separator
 
 from config import Config
+from emojis import DENY
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,7 @@ def is_bot_owner():
         if not Config.BOT_OWNER_ID or interaction.user.id != Config.BOT_OWNER_ID:
             if not interaction.response.is_done():
                 await interaction.response.send_message(
-                    "❌ This command is restricted to the bot owner.",
+                    f"{DENY} This command is restricted to the bot owner.",
                     ephemeral=True,
                 )
             return False
@@ -48,7 +49,7 @@ class OwnerCog(commands.Cog, name="Owner"):
             gid = int(guild_id.strip())
         except ValueError:
             err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay("❌ Invalid guild ID.")))
+            err_view.add_item(Container(TextDisplay(f"{DENY} Invalid guild ID.")))
             await interaction.response.send_message(view=err_view, ephemeral=True)
             return
 
@@ -58,7 +59,7 @@ class OwnerCog(commands.Cog, name="Owner"):
                 err_view = LayoutView()
                 err_view.add_item(Container(
                     TextDisplay(
-                        f"❌ No reply **#{reply_id}** found for confession "
+                        f"{DENY} No reply **#{reply_id}** found for confession "
                         f"**#{confession_id}** in guild `{gid}`."
                     )
                 ))
@@ -96,7 +97,7 @@ class OwnerCog(commands.Cog, name="Owner"):
             err_view = LayoutView()
             err_view.add_item(Container(
                 TextDisplay(
-                    f"❌ No confession **#{confession_id}** found in guild `{gid}`."
+                    f"{DENY} No confession **#{confession_id}** found in guild `{gid}`."
                 )
             ))
             await interaction.response.send_message(view=err_view, ephemeral=True)
@@ -124,6 +125,107 @@ class OwnerCog(commands.Cog, name="Owner"):
         logger.info(
             f"Owner {interaction.user.id} looked up confession guild={gid} "
             f"confession={confession_id} author={author_id}"
+        )
+
+    @app_commands.command(
+        name="confessionlogs",
+        description="[Owner only] List recent confessions stored in the database for a guild",
+    )
+    @app_commands.describe(
+        guild_id="The Discord server (guild) ID",
+        limit="How many recent confessions to show (max 50)",
+    )
+    @is_bot_owner()
+    async def confessionlogs(
+        self,
+        interaction: discord.Interaction,
+        guild_id: str,
+        limit: int = 10,
+    ):
+        try:
+            gid = int(guild_id.strip())
+        except ValueError:
+            await interaction.response.send_message(f"{DENY} Invalid guild ID.", ephemeral=True)
+            return
+
+        rows = await self.bot.db.list_confessions(gid, limit)
+        if not rows:
+            await interaction.response.send_message(
+                f"No confessions stored for guild `{gid}`.",
+                ephemeral=True,
+            )
+            return
+
+        lines = []
+        for row in rows:
+            snippet = row["content"]
+            if len(snippet) > 80:
+                snippet = snippet[:80] + "…"
+            lines.append(
+                f"**#{row['confession_num']}** · `{row['status']}` · author `{row['author_id']}`\n"
+                f"> {snippet}"
+            )
+
+        body = "\n\n".join(lines)
+        if len(body) > 3500:
+            body = body[:3500] + "\n…"
+
+        await interaction.response.send_message(
+            f"**Confession logs** — guild `{gid}` (latest {len(rows)})\n\n{body}",
+            ephemeral=True,
+        )
+
+    @app_commands.command(
+        name="replylogs",
+        description="[Owner only] List recent replies stored in the database",
+    )
+    @app_commands.describe(
+        guild_id="The Discord server (guild) ID",
+        confession_id="Optional confession number to filter replies",
+        limit="How many recent replies to show (max 50)",
+    )
+    @is_bot_owner()
+    async def replylogs(
+        self,
+        interaction: discord.Interaction,
+        guild_id: str,
+        confession_id: int = None,
+        limit: int = 10,
+    ):
+        try:
+            gid = int(guild_id.strip())
+        except ValueError:
+            await interaction.response.send_message(f"{DENY} Invalid guild ID.", ephemeral=True)
+            return
+
+        rows = await self.bot.db.list_replies(gid, confession_id, limit)
+        if not rows:
+            filter_note = f" for confession #{confession_id}" if confession_id else ""
+            await interaction.response.send_message(
+                f"No replies stored for guild `{gid}`{filter_note}.",
+                ephemeral=True,
+            )
+            return
+
+        lines = []
+        for row in rows:
+            snippet = row["content"]
+            if len(snippet) > 80:
+                snippet = snippet[:80] + "…"
+            lines.append(
+                f"**#{row['confession_num']}** reply **#{row['reply_num']}** · "
+                f"`{row['status']}` · author `{row['author_id']}`\n"
+                f"> {snippet}"
+            )
+
+        body = "\n\n".join(lines)
+        if len(body) > 3500:
+            body = body[:3500] + "\n…"
+
+        filter_label = f" confession #{confession_id}" if confession_id else ""
+        await interaction.response.send_message(
+            f"**Reply logs** — guild `{gid}`{filter_label} (latest {len(rows)})\n\n{body}",
+            ephemeral=True,
         )
 
     async def _format_user(self, author_id):

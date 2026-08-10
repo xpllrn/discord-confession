@@ -5,14 +5,24 @@ from discord.ext import commands
 from discord.ui import LayoutView, Container, TextDisplay, Separator, Button, Modal, TextInput
 
 from config import Config
-from logutil import send_guild_activity_log, send_report_log
-from ui_helpers import respond_interaction_error, schedule_error_report
+from emojis import APPROVE, DENY, WARN, APPROVE_EMOJI, DENY_EMOJI, TICKET
+from logutil import send_report_log
+from ui_helpers import schedule_error_report, handle_interaction_error
 
 logger = logging.getLogger(__name__)
 
 
-async def _report_error(bot, error: Exception, interaction: discord.Interaction = None, command_used: str = "unknown"):
-    schedule_error_report(bot, error, interaction, command_used)
+async def _report_error(
+    bot,
+    error: Exception,
+    interaction: discord.Interaction = None,
+    command_used: str = "unknown",
+    notify_user: bool = False,
+):
+    if notify_user and interaction:
+        await handle_interaction_error(bot, interaction, error, command_used)
+    else:
+        schedule_error_report(bot, error, interaction, command_used)
 
 
 class ReportModal(Modal, title="Report Confession"):
@@ -35,7 +45,7 @@ class ReportModal(Modal, title="Report Confession"):
             record = await self.bot.db.get_confession(interaction.guild_id, self.confession_num)
             if not record:
                 err_view = LayoutView()
-                err_view.add_item(Container(TextDisplay("❌ Could not find that confession.")))
+                err_view.add_item(Container(TextDisplay(f"{DENY} Could not find that confession.")))
                 await interaction.response.send_message(view=err_view, ephemeral=True)
                 return
 
@@ -65,7 +75,7 @@ class ReportModal(Modal, title="Report Confession"):
 
             ok_view = LayoutView()
             ok_view.add_item(Container(
-                TextDisplay("# ✅ Report Submitted"),
+                TextDisplay(f"# {APPROVE} Report Submitted"),
                 Separator(),
                 TextDisplay("Thanks — your report has been sent to the bot staff for review."),
             ))
@@ -73,7 +83,7 @@ class ReportModal(Modal, title="Report Confession"):
         except Exception as e:
             await _report_error(self.bot, e, interaction, "report")
             err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay("❌ Failed to submit report. Please try again.")))
+            err_view.add_item(Container(TextDisplay(f"{DENY} Failed to submit report. Please try again.")))
             if interaction.response.is_done():
                 await interaction.followup.send(view=err_view, ephemeral=True)
             else:
@@ -120,7 +130,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
             if word.lower() in confession_text.lower():
                 err_view = LayoutView()
                 err_view.add_item(Container(
-                    TextDisplay("# 🚫 Blocked Content"),
+                    TextDisplay(f"# {WARN} Blocked Content"),
                     Separator(),
                     TextDisplay("Your confession contains prohibited words configured by the server administration."),
                 ))
@@ -155,7 +165,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
 
                     resp_view = LayoutView()
                     resp_view.add_item(Container(
-                        TextDisplay("# 📥 Reply Sent for Review"),
+                        TextDisplay(f"# {WARN} Reply Sent for Review"),
                         Separator(),
                         TextDisplay(
                             "Your anonymous reply has been submitted for moderator review. "
@@ -175,7 +185,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
                 description=confession_text,
                 color=discord.Color.blurple(),
             )
-            reply_embed.set_author(name=f"🕵️ Anonymous Reply #{reply_num}")
+            reply_embed.set_title(f"🕵️ Anonymous Reply #{reply_num}")
 
             thread_view = discord.ui.View(timeout=None)
             confess_btn = discord.ui.Button(
@@ -195,7 +205,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
 
             resp_view = LayoutView()
             resp_view.add_item(Container(
-                TextDisplay("# ✅ Reply Posted"),
+                TextDisplay(f"# {APPROVE} Reply Posted"),
                 Separator(),
                 TextDisplay("Your anonymous reply has been posted in the thread!"),
             ))
@@ -205,7 +215,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
             await _report_error(self.bot, e, interaction, "reply")
             err_view = LayoutView()
             err_view.add_item(Container(
-                TextDisplay("# ❌ Submission Error"),
+                TextDisplay(f"# {DENY} Submission Error"),
                 Separator(),
                 TextDisplay(f"An error occurred: {e}"),
             ))
@@ -236,6 +246,7 @@ class ReplyReviewActionView(LayoutView):
         self.approve_btn = Button(
             label="Approve",
             style=discord.ButtonStyle.secondary,
+            emoji=APPROVE_EMOJI,
             custom_id=f"approve_reply_{confession_num}_{reply_num}",
         )
         self.approve_btn.callback = self.approve_callback
@@ -243,6 +254,7 @@ class ReplyReviewActionView(LayoutView):
         self.reject_btn = Button(
             label="Reject",
             style=discord.ButtonStyle.secondary,
+            emoji=DENY_EMOJI,
             custom_id=f"reject_reply_{confession_num}_{reply_num}",
         )
         self.reject_btn.callback = self.reject_callback
@@ -252,7 +264,7 @@ class ReplyReviewActionView(LayoutView):
         button_row.add_item(self.reject_btn)
 
         container = Container(
-            TextDisplay(f"# 📜 Review Pending Reply #{reply_num}\n\n{content_text}"),
+            TextDisplay(f"# {TICKET} Review Pending Reply #{reply_num}\n\n{content_text}"),
             Separator(),
             TextDisplay(f"For confession **#{confession_num}**. Click Approve to post to thread or Reject to discard."),
         )
@@ -280,7 +292,7 @@ class ReplyReviewActionView(LayoutView):
                 description=self.content_text,
                 color=discord.Color.blurple(),
             )
-            reply_embed.set_author(name=f"🕵️ Anonymous Reply #{self.reply_num}")
+            reply_embed.set_title(f"🕵️ Anonymous Reply #{self.reply_num}")
 
             thread_view = discord.ui.View(timeout=None)
             confess_btn = discord.ui.Button(
@@ -302,7 +314,7 @@ class ReplyReviewActionView(LayoutView):
             )
 
             rev_container = Container(
-                TextDisplay(f"# ✅ Approved Reply #{self.reply_num}\n\n{self.content_text}"),
+                TextDisplay(f"# {APPROVE} Approved Reply #{self.reply_num}\n\n{self.content_text}"),
                 Separator(),
                 TextDisplay(f"Approved by {interaction.user.mention}"),
             )
@@ -313,7 +325,7 @@ class ReplyReviewActionView(LayoutView):
             await _report_error(self.bot, e, interaction, "reply_approve")
             if not interaction.response.is_done():
                 err_view = LayoutView()
-                err_view.add_item(Container(TextDisplay(f"❌ Error approving reply: {e}")))
+                err_view.add_item(Container(TextDisplay(f"{DENY} Error approving reply: {e}")))
                 await interaction.response.send_message(view=err_view, ephemeral=True)
 
     async def reject_callback(self, interaction: discord.Interaction):
@@ -322,7 +334,7 @@ class ReplyReviewActionView(LayoutView):
                 self.guild_id, self.confession_num, self.reply_num, "rejected"
             )
             rev_container = Container(
-                TextDisplay(f"# ❌ Rejected Reply #{self.reply_num}\n\n{self.content_text}"),
+                TextDisplay(f"# {DENY} Rejected Reply #{self.reply_num}\n\n{self.content_text}"),
                 Separator(),
                 TextDisplay(f"Rejected by {interaction.user.mention}"),
             )
@@ -377,7 +389,7 @@ class ConfessionButtonsView(discord.ui.View):
         except Exception as e:
             await _report_error(self.bot, e, interaction, "reply_button")
             err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay(f"❌ Could not open reply form: {e}")))
+            err_view.add_item(Container(TextDisplay(f"{DENY} Could not open reply form: {e}")))
             await interaction.response.send_message(view=err_view, ephemeral=True)
 
     async def report_callback(self, interaction: discord.Interaction):
@@ -387,7 +399,7 @@ class ConfessionButtonsView(discord.ui.View):
         except Exception as e:
             await _report_error(self.bot, e, interaction, "report_button")
             err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay(f"❌ Could not open report form: {e}")))
+            err_view.add_item(Container(TextDisplay(f"{DENY} Could not open report form: {e}")))
             if not interaction.response.is_done():
                 await interaction.response.send_message(view=err_view, ephemeral=True)
 
@@ -402,6 +414,7 @@ class ReviewActionView(LayoutView):
         self.approve_btn = Button(
             label="Approve",
             style=discord.ButtonStyle.secondary,
+            emoji=APPROVE_EMOJI,
             custom_id=f"approve_conf_{confession_num}",
         )
         self.approve_btn.callback = self.approve_callback
@@ -409,6 +422,7 @@ class ReviewActionView(LayoutView):
         self.reject_btn = Button(
             label="Reject",
             style=discord.ButtonStyle.secondary,
+            emoji=DENY_EMOJI,
             custom_id=f"reject_conf_{confession_num}",
         )
         self.reject_btn.callback = self.reject_callback
@@ -418,7 +432,7 @@ class ReviewActionView(LayoutView):
         button_row.add_item(self.reject_btn)
 
         container = Container(
-            TextDisplay(f"# 📜 Review Pending Confession #{confession_num}\n\n{content_text}"),
+            TextDisplay(f"# {TICKET} Review Pending Confession #{confession_num}\n\n{content_text}"),
             Separator(),
             TextDisplay("Click Approve to post to confession channels or Reject to discard."),
             button_row,
@@ -437,7 +451,7 @@ class ReviewActionView(LayoutView):
             confession_channels = settings.get("confession_channels", [])
             if not confession_channels:
                 err_view = LayoutView()
-                err_view.add_item(Container(TextDisplay("❌ No confession channel configured.")))
+                err_view.add_item(Container(TextDisplay(f"{DENY} No confession channel configured.")))
                 await interaction.response.send_message(view=err_view, ephemeral=True)
                 return
 
@@ -445,7 +459,7 @@ class ReviewActionView(LayoutView):
                 description=self.content_text,
                 color=discord.Color.blurple(),
             )
-            embed.set_author(name=f"🕵️ Anonymous Confession #{self.confession_num}")
+            embed.set_title(f"Anonymous Confession #{self.confession_num}")
 
             buttons_view = ConfessionButtonsView(self.bot, self.confession_num)
 
@@ -476,23 +490,8 @@ class ReviewActionView(LayoutView):
 
             await self.bot.db.update_confession_status(guild_id, self.confession_num, "approved")
 
-            await send_guild_activity_log(
-                self.bot,
-                channel_id=Config.GUILD_LOG_CHANNEL_ID,
-                title="Confession Approved",
-                description=(
-                    f"```diff\n+ Confession #{self.confession_num} approved in {interaction.guild.name}\n```"
-                ),
-                guild=interaction.guild,
-                fields=[
-                    ("Moderator", f"`{interaction.user}` (`{interaction.user.id}`)", True),
-                    ("Confession ID", f"`{self.confession_num}`", True),
-                ],
-                color=0x438C53,
-            )
-
             rev_container = Container(
-                TextDisplay(f"# ✅ Approved Confession #{self.confession_num}\n\n{self.content_text}"),
+                TextDisplay(f"# {APPROVE} Approved Confession #{self.confession_num}\n\n{self.content_text}"),
                 Separator(),
                 TextDisplay(f"Approved by {interaction.user.mention}"),
             )
@@ -503,7 +502,7 @@ class ReviewActionView(LayoutView):
             await _report_error(self.bot, e, interaction, "approve")
             if not interaction.response.is_done():
                 err_view = LayoutView()
-                err_view.add_item(Container(TextDisplay(f"❌ Error approving confession: {e}")))
+                err_view.add_item(Container(TextDisplay(f"{DENY} Error approving confession: {e}")))
                 await interaction.response.send_message(view=err_view, ephemeral=True)
 
     async def reject_callback(self, interaction: discord.Interaction):
@@ -511,22 +510,8 @@ class ReviewActionView(LayoutView):
             await self.bot.db.update_confession_status(
                 interaction.guild_id, self.confession_num, "rejected"
             )
-            await send_guild_activity_log(
-                self.bot,
-                channel_id=Config.GUILD_LOG_CHANNEL_ID,
-                title="Confession Rejected",
-                description=(
-                    f"```diff\n- Confession #{self.confession_num} rejected in {interaction.guild.name}\n```"
-                ),
-                guild=interaction.guild,
-                fields=[
-                    ("Moderator", f"`{interaction.user}` (`{interaction.user.id}`)", True),
-                    ("Confession ID", f"`{self.confession_num}`", True),
-                ],
-                color=0xCD514F,
-            )
             rev_container = Container(
-                TextDisplay(f"# ❌ Rejected Confession #{self.confession_num}\n\n{self.content_text}"),
+                TextDisplay(f"# {DENY} Rejected Confession #{self.confession_num}\n\n{self.content_text}"),
                 Separator(),
                 TextDisplay(f"Rejected by {interaction.user.mention}"),
             )
@@ -571,7 +556,7 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
         if not confession_channels:
             err_view = LayoutView()
             err_view.add_item(Container(
-                TextDisplay("# ⚠️ Bot Not Configured"),
+                TextDisplay(f"# {WARN} Bot Not Configured"),
                 Separator(),
                 TextDisplay(
                     "This server has not configured confession channels yet. "
@@ -587,7 +572,7 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
             if word.lower() in confession_text.lower():
                 err_view = LayoutView()
                 err_view.add_item(Container(
-                    TextDisplay("# 🚫 Blocked Content"),
+                    TextDisplay(f"# {WARN} Blocked Content"),
                     Separator(),
                     TextDisplay(
                         "Your confession contains prohibited words configured by the server administration."
@@ -619,21 +604,9 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
                 review_view = ReviewActionView(self.bot, confession_num, confession_text)
                 await review_channel.send(view=review_view)
 
-                await send_guild_activity_log(
-                    self.bot,
-                    channel_id=Config.GUILD_LOG_CHANNEL_ID,
-                    title="Confession Submitted for Review",
-                    description=(
-                        f"```diff\n+ Confession #{confession_num} awaiting review in {interaction.guild.name}\n```"
-                    ),
-                    guild=interaction.guild,
-                    fields=[("Confession ID", f"`{confession_num}`", True)],
-                    color=0xF6DBD3,
-                )
-
                 resp_view = LayoutView()
                 resp_view.add_item(Container(
-                    TextDisplay("# 📥 Sent for Review"),
+                    TextDisplay(f"# {WARN} Sent for Review"),
                     Separator(),
                     TextDisplay(
                         f"Your anonymous confession **#{confession_num}** has been submitted "
@@ -647,7 +620,7 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
             description=confession_text,
             color=discord.Color.blurple(),
         )
-        embed.set_author(name=f"🕵️ Anonymous Confession #{confession_num}")
+        embed.set_title(f"Anonymous Confession #{confession_num}")
 
         buttons_view = ConfessionButtonsView(self.bot, confession_num)
 
@@ -676,21 +649,9 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
                 except Exception as e:
                     await _report_error(self.bot, e, interaction, f"send_channel_{ch_id}")
 
-        await send_guild_activity_log(
-            self.bot,
-            channel_id=Config.GUILD_LOG_CHANNEL_ID,
-            title="Confession Posted",
-            description=(
-                f"```diff\n+ Confession #{confession_num} posted in {interaction.guild.name}\n```"
-            ),
-            guild=interaction.guild,
-            fields=[("Confession ID", f"`{confession_num}`", True)],
-            color=0x438C53,
-        )
-
         resp_view = LayoutView()
         resp_view.add_item(Container(
-            TextDisplay("# ✅ Confession Posted"),
+            TextDisplay(f"# {APPROVE} Confession Posted"),
             Separator(),
             TextDisplay(
                 f"Your anonymous confession **#{confession_num}** has been successfully published!"
@@ -699,19 +660,7 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
         await interaction.response.send_message(view=resp_view, ephemeral=True)
 
     async def on_error(self, interaction: discord.Interaction, error: Exception):
-        await _report_error(self.bot, error, interaction, "confess_modal")
-        err_view = LayoutView()
-        err_view.add_item(Container(
-            TextDisplay("# ❌ Submission Error"),
-            Separator(),
-            TextDisplay(
-                "An unexpected error occurred while processing your confession. Please try again."
-            ),
-        ))
-        if interaction.response.is_done():
-            await interaction.followup.send(view=err_view, ephemeral=True)
-        else:
-            await interaction.response.send_message(view=err_view, ephemeral=True)
+        await handle_interaction_error(self.bot, interaction, error, "confess")
 
 
 class ConfessionsCog(commands.Cog, name="Confessions"):
@@ -724,11 +673,7 @@ class ConfessionsCog(commands.Cog, name="Confessions"):
             modal = ConfessionModal(self.bot)
             await interaction.response.send_modal(modal)
         except Exception as e:
-            await _report_error(self.bot, e, interaction, "confess")
-            await respond_interaction_error(
-                interaction,
-                "❌ Could not open confession form. Please try again.",
-            )
+            await _report_error(self.bot, e, interaction, "confess", notify_user=True)
 
 
 async def setup(bot):

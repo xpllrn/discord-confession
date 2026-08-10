@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord.ui import LayoutView, Container, TextDisplay, Separator, Select, Button, Modal, TextInput
 import aiohttp
 import io
+from emojis import APPROVE, DENY, WARN, COGH, WRENCH
 
 class AvatarModal(Modal, title="Set Bot Avatar"):
     avatar_url = TextInput(
@@ -39,14 +40,14 @@ class AvatarModal(Modal, title="Set Bot Avatar"):
 
             resp_view = LayoutView()
             resp_view.add_item(Container(
-                TextDisplay("# ✅ Avatar Updated\n\nThe bot's avatar has been updated for this server!")
+                TextDisplay(f"# {APPROVE} Avatar Updated\n\nThe bot's avatar has been updated for this server!")
             ))
             await interaction.response.send_message(view=resp_view, ephemeral=True)
 
         except Exception as e:
             err_view = LayoutView()
             err_view.add_item(Container(
-                TextDisplay(f"# ❌ Failed to Update Avatar\n\n{str(e)}\n\nMake sure the URL is a valid image link.")
+                TextDisplay(f"# {DENY} Failed to Update Avatar\n\n{str(e)}\n\nMake sure the URL is a valid image link.")
             ))
             await interaction.response.send_message(view=err_view, ephemeral=True)
 
@@ -140,7 +141,7 @@ async def send_filter_words_panel(interaction: discord.Interaction, bot, filter_
     button_row.add_item(clear_btn)
 
     container = Container(
-        TextDisplay("# 🚫 Filter Words Management"),
+        TextDisplay(f"# {WARN} Filter Words Management"),
         Separator(),
         TextDisplay(f"{words_text}\n\nUse the buttons below to add or remove words from the filter list."),
         button_row
@@ -199,7 +200,7 @@ class PanelSelectMenu(Select):
             button_row.add_item(avatar_btn)
             
             container = Container(
-                TextDisplay("# 🎨 Customize Bot"),
+                TextDisplay(f"# {COGH} Customize Bot"),
                 Separator(),
                 TextDisplay(f"{avatar_text}\n\nClick the button below to upload a new avatar for this server."),
                 button_row
@@ -220,7 +221,7 @@ class PanelView(LayoutView):
         select_row.add_item(select_menu)
         
         container = Container(
-            TextDisplay("# ⚙️ Customize your confession bot!"),
+            TextDisplay(f"# {WRENCH} Customize your confession bot!"),
             Separator(),
             TextDisplay("Use the options below to customize the bot according to your server preferences."),
             select_row
@@ -251,7 +252,7 @@ class PanelCog(commands.Cog, name="Panel"):
             schedule_error_report(self.bot, e, interaction, "panel")
             if not interaction.response.is_done():
                 await interaction.response.send_message(
-                    "❌ Panel failed to load. Rebuild the bot: `docker compose up -d --build confess`",
+                    f"{DENY} Panel failed to load. Rebuild the bot: `docker compose up -d --build confess`",
                     ephemeral=True,
                 )
 
@@ -260,7 +261,7 @@ class PanelCog(commands.Cog, name="Panel"):
         if isinstance(error, app_commands.MissingPermissions):
             if not interaction.response.is_done():
                 await interaction.response.send_message(
-                    "❌ You need **Administrator** permissions to use `/panel`.",
+                    f"{DENY} You need **Administrator** permissions to use `/panel`.",
                     ephemeral=True,
                 )
 

@@ -53,11 +53,12 @@ async def send_error_report(
     guild_id: Optional[int] = None,
     command_used: str = "unknown",
     channel_id: int,
-) -> Optional[str]:
+    error_code: Optional[str] = None,
+) -> str:
     """Send an error embed + traceback file to the error log channel. Returns error code."""
     from config import Config
 
-    code = generate_error_code()
+    code = error_code or generate_error_code()
     channel = await get_log_channel(bot, channel_id or Config.ERROR_LOG_CHANNEL_ID)
     if not channel:
         return code
@@ -161,39 +162,6 @@ async def send_guild_leave_log(
     embed.add_field(name="Remover ID", value=ansi_id(remover, "red"), inline=True)
     embed.set_footer(text=f"Guild ID: {guild.id}")
     if guild.icon:
-        embed.set_thumbnail(url=guild.icon.url)
-
-    try:
-        await channel.send(embed=embed)
-    except Exception:
-        pass
-
-
-async def send_guild_activity_log(
-    bot: discord.Client,
-    *,
-    channel_id: int,
-    title: str,
-    description: str,
-    guild: Optional[discord.Guild] = None,
-    guild_id: Optional[int] = None,
-    fields: Optional[list] = None,
-    color: int = 0xF6DBD3,
-):
-    from config import Config
-
-    channel = await get_log_channel(bot, channel_id or Config.GUILD_LOG_CHANNEL_ID)
-    if not channel:
-        return
-
-    embed = discord.Embed(title=title, description=description, color=color)
-    if fields:
-        for name, value, inline in fields:
-            embed.add_field(name=name, value=value, inline=inline)
-    gid = guild.id if guild else guild_id
-    if gid:
-        embed.set_footer(text=f"Guild ID: {gid}")
-    if guild and guild.icon:
         embed.set_thumbnail(url=guild.icon.url)
 
     try:

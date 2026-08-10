@@ -7,7 +7,7 @@ from discord.ext import commands
 from config import Config
 from database import DatabaseManager
 from cache import CacheManager
-from ui_helpers import respond_interaction_error, schedule_error_report
+from ui_helpers import handle_interaction_error, schedule_error_report
 
 logging.basicConfig(
     level=logging.INFO,
@@ -54,20 +54,11 @@ class ConfessionBot(commands.Bot):
         async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
             original = getattr(error, "original", error)
             command_name = interaction.command.name if interaction.command else "unknown"
-            is_unknown = getattr(original, "code", None) == 10062 or "10062" in str(original)
-
-            # Respond immediately — never block on log channel I/O (causes "application did not respond")
-            if not is_unknown and not interaction.response.is_done():
-                await respond_interaction_error(
-                    interaction,
-                    f"❌ An error occurred: {original}",
-                )
-
-            schedule_error_report(
+            await handle_interaction_error(
                 self,
+                interaction,
                 original if isinstance(original, BaseException) else error,
-                interaction=interaction,
-                command_used=command_name,
+                command_name,
             )
 
         logger.info("Syncing slash commands...")

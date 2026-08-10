@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord.ui import LayoutView, Container, TextDisplay, Separator, ChannelSelect, Button
 from config import Config
-from logutil import send_guild_activity_log
+from emojis import DENY
 
 class ReviewChannelSelectView(LayoutView):
     def __init__(self, bot, selected_confession_channel_ids: list[int]):
@@ -52,22 +52,6 @@ class ReviewChannelSelectView(LayoutView):
         await self.bot.db.set_review_channel(guild_id, review_channel.id)
         await self.bot.cache.clear_guild_config(guild_id)
 
-        await send_guild_activity_log(
-            self.bot,
-            channel_id=Config.GUILD_LOG_CHANNEL_ID,
-            title="Guild Setup Completed",
-            description=(
-                f"```diff\n+ Setup finished for {interaction.guild.name}\n```"
-            ),
-            guild=interaction.guild,
-            fields=[
-                ("Confession Channels", f"`{len(self.selected_confession_channel_ids)}`", True),
-                ("Review Channel", f"<#{review_channel.id}>", True),
-                ("Configured By", f"`{interaction.user}` (`{interaction.user.id}`)", False),
-            ],
-            color=0x438C53,
-        )
-
         completion_view = CompletionView()
         await interaction.response.edit_message(view=completion_view)
 
@@ -77,22 +61,6 @@ class ReviewChannelSelectView(LayoutView):
         await self.bot.db.set_confession_channels(guild_id, self.selected_confession_channel_ids)
         await self.bot.db.set_review_channel(guild_id, None)
         await self.bot.cache.clear_guild_config(guild_id)
-
-        await send_guild_activity_log(
-            self.bot,
-            channel_id=Config.GUILD_LOG_CHANNEL_ID,
-            title="Guild Setup Completed",
-            description=(
-                f"```diff\n+ Setup finished for {interaction.guild.name}\n```"
-            ),
-            guild=interaction.guild,
-            fields=[
-                ("Confession Channels", f"`{len(self.selected_confession_channel_ids)}`", True),
-                ("Review Channel", "`Skipped`", True),
-                ("Configured By", f"`{interaction.user}` (`{interaction.user.id}`)", False),
-            ],
-            color=0x438C53,
-        )
 
         completion_view = CompletionView()
         await interaction.response.edit_message(view=completion_view)
@@ -168,7 +136,7 @@ class SetupCog(commands.Cog, name="Setup"):
             schedule_error_report(self.bot, e, interaction, "setup")
             if not interaction.response.is_done():
                 await interaction.response.send_message(
-                    "❌ Setup UI failed to load. Rebuild the bot image so discord.py 2.6+ is installed:\n"
+                    f"{DENY} Setup UI failed to load. Rebuild the bot image so discord.py 2.6+ is installed:\n"
                     "`docker compose up -d --build confess`",
                     ephemeral=True,
                 )
@@ -178,7 +146,7 @@ class SetupCog(commands.Cog, name="Setup"):
         if isinstance(error, app_commands.MissingPermissions):
             if not interaction.response.is_done():
                 await interaction.response.send_message(
-                    "❌ You need **Administrator** permissions to run `/setup`.",
+                    f"{DENY} You need **Administrator** permissions to run `/setup`.",
                     ephemeral=True,
                 )
 

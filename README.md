@@ -57,6 +57,8 @@ docker compose down
 | `/setup` | Configure confession & review channels | Administrator |
 | `/panel` | Customization panel (avatar, word filter) | Administrator |
 | `/lookup` | Look up confession/reply author by ID | Bot owner only |
+| `/confessionlogs` | List recent confessions from DB | Bot owner only |
+| `/replylogs` | List recent replies from DB | Bot owner only |
 
 ---
 
@@ -66,8 +68,9 @@ docker compose down
 | :--- | :--- | :--- |
 | Errors | `1536045899049078965` | Error embeds + traceback files |
 | Join / Leave | `1536045678508118056` | Bot added / removed from servers |
-| Guild activity | `1536045911862411326` | Setup, posts, approvals |
 | Reports | `1536045946956415168` | User-reported confessions |
+
+Confession activity (submitted, approved, posted, etc.) is stored in the database only. Use `/lookup`, `/confessionlogs`, and `/replylogs` to fetch it.
 
 Staff guild ID: `1534941712177168384`  
 Bot user ID: `1508460938255138981`

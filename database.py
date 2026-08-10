@@ -202,6 +202,29 @@ class DatabaseManager:
                     "guild_id": guild_id,
                 }
 
+    async def list_confessions(self, guild_id: int, limit: int = 20) -> List[Dict[str, Any]]:
+        limit = max(1, min(limit, 50))
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("""
+                SELECT confession_num, content, author_id, status, created_at
+                FROM confessions
+                WHERE guild_id = ?
+                ORDER BY confession_num DESC
+                LIMIT ?
+            """, (guild_id, limit)) as cursor:
+                rows = await cursor.fetchall()
+                return [
+                    {
+                        "confession_num": row[0],
+                        "content": row[1],
+                        "author_id": row[2],
+                        "status": row[3],
+                        "created_at": row[4],
+                        "guild_id": guild_id,
+                    }
+                    for row in rows
+                ]
+
     async def next_reply_num(self, guild_id: int, confession_num: int) -> int:
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute("""
@@ -260,6 +283,48 @@ class DatabaseManager:
                     "guild_id": guild_id,
                     "confession_num": confession_num,
                 }
+
+    async def list_replies(
+        self,
+        guild_id: int,
+        confession_num: Optional[int] = None,
+        limit: int = 20,
+    ) -> List[Dict[str, Any]]:
+        limit = max(1, min(limit, 50))
+        async with aiosqlite.connect(self.db_path) as db:
+            if confession_num is not None:
+                query = """
+                    SELECT confession_num, reply_num, content, author_id, status, created_at
+                    FROM replies
+                    WHERE guild_id = ? AND confession_num = ?
+                    ORDER BY reply_num DESC
+                    LIMIT ?
+                """
+                params = (guild_id, confession_num, limit)
+            else:
+                query = """
+                    SELECT confession_num, reply_num, content, author_id, status, created_at
+                    FROM replies
+                    WHERE guild_id = ?
+                    ORDER BY created_at DESC
+                    LIMIT ?
+                """
+                params = (guild_id, limit)
+
+            async with db.execute(query, params) as cursor:
+                rows = await cursor.fetchall()
+                return [
+                    {
+                        "confession_num": row[0],
+                        "reply_num": row[1],
+                        "content": row[2],
+                        "author_id": row[3],
+                        "status": row[4],
+                        "created_at": row[5],
+                        "guild_id": guild_id,
+                    }
+                    for row in rows
+                ]
 
     async def track_confession_message(self, guild_id: int, channel_id: int, message_id: int, confession_num: int):
         async with aiosqlite.connect(self.db_path) as db:
