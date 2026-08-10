@@ -11,7 +11,7 @@ class Config:
     DATABASE_PATH: str = os.getenv("DATABASE_PATH", "data/confessions.db")
 
     SUPPORT_SERVER_URL: str = os.getenv(
-        "SUPPORT_SERVER_URL", "https://discord.gg/CbM8AAUcua"
+        "SUPPORT_SERVER_URL", "https://discord.gg/PNDPCfJPFe"
     )
 
     # Bot Discord user ID (from Developer Portal → OAuth2 / Bot tab)

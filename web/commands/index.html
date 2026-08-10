@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commands — Confession Discord Bot</title>
+  <meta name="description" content="Slash commands for Confession: /confess, /setup, /panel, /help, /ping, and owner tools.">
+  <meta name="theme-color" content="#9b7bd1">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://confess.adore.rest/commands/">
+  <meta property="og:title" content="Commands — Confession">
+  <meta property="og:description" content="Full command list for the Confession Discord bot.">
+  <meta property="og:image" content="https://confess.adore.rest/assets/og-card.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Commands — Confession">
+  <meta name="twitter:description" content="Full command list for the Confession Discord bot.">
+  <meta name="twitter:image" content="https://confess.adore.rest/assets/og-card.png">
+
+  <link rel="icon" href="/assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav class="navbar" aria-label="Primary">
+    <div class="nav-inner">
+      <a href="/" class="brand">
+        <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
+        <span class="brand-name">Confession</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/commands/" class="active">Commands</a></li>
+        <li><a href="/docs/">Docs</a></li>
+        <li><a href="/status/">Status</a></li>
+        <li><a href="/privacy/">Privacy</a></li>
+        <li><a href="/tos/">ToS</a></li>
+        <li><a href="/support/">Support</a></li>
+        <li class="nav-cta"><a class="btn btn-primary" href="/invite/">Invite</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1 class="section-title">Commands</h1>
+      <p class="section-sub">Slash commands and confession buttons for members, admins, and the bot owner.</p>
+    </div>
+  </header>
+
+  <main class="section-tight">
+    <div class="container">
+      <div class="cmd-block">
+        <h2>Everyone</h2>
+        <div class="cmd-list">
+          <div class="cmd-row">
+            <div class="cmd-name">/confess</div>
+            <div class="cmd-who">Everyone</div>
+            <div class="cmd-desc">Open the confession modal. Optionally attach an image. Posts anonymously to your server’s confession channel (or review queue if enabled).</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">/help</div>
+            <div class="cmd-who">Everyone</div>
+            <div class="cmd-desc">Show bot overview, available commands, and a link to the support server.</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">/ping</div>
+            <div class="cmd-who">Everyone</div>
+            <div class="cmd-desc">Check whether Confession is online and see current WebSocket latency.</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">Report (button)</div>
+            <div class="cmd-who">Everyone</div>
+            <div class="cmd-desc">On each confession post, use Report to flag content for staff. No slash command required.</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">Reply (button)</div>
+            <div class="cmd-who">Everyone</div>
+            <div class="cmd-desc">Reply anonymously to a confession; creates or uses a discussion thread under that post.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <h2>Administrators</h2>
+        <div class="cmd-list">
+          <div class="cmd-row">
+            <div class="cmd-name">/setup</div>
+            <div class="cmd-who admin">Administrator</div>
+            <div class="cmd-desc">Guided setup: choose confession channel(s), optional review channel, and finish server configuration.</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">/panel</div>
+            <div class="cmd-who admin">Administrator</div>
+            <div class="cmd-desc">Customization panel — server profile (name, avatar, banner, bio) and blocked-word filter management.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <h2>Bot owner</h2>
+        <div class="cmd-list">
+          <div class="cmd-row">
+            <div class="cmd-name">/lookup</div>
+            <div class="cmd-who owner">Owner</div>
+            <div class="cmd-desc">Look up who submitted a confession by guild ID and confession ID. Owner-only safety tool.</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">/confessionlogs</div>
+            <div class="cmd-who owner">Owner</div>
+            <div class="cmd-desc">List recent confessions stored for a guild.</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">/replylogs</div>
+            <div class="cmd-who owner">Owner</div>
+            <div class="cmd-desc">List recent anonymous replies stored in the database.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="/" class="brand">
+          <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
+          <span class="brand-name">Confession</span>
+        </a>
+        <p class="footer-brand-desc">Anonymous Discord confessions. Part of the adore.rest ecosystem.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/docs/">Documentation</a></li>
+          <li><a href="/commands/">Commands</a></li>
+          <li><a href="/status/">Status</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal &amp; help</h4>
+        <ul>
+          <li><a href="/privacy/">Privacy Policy</a></li>
+          <li><a href="/tos/">Terms of Service</a></li>
+          <li><a href="/support/">Support Discord</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 Confession · confess.adore.rest</p>
+    </div>
+  </footer>
+  <script src="/app.js"></script>
+</body>
+</html>

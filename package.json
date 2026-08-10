@@ -1,0 +1,7 @@
+{
+  "name": "confess",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p public && cp -r web/* public/"
+  }
+}

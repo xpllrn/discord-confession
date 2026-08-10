@@ -2,7 +2,7 @@
 
 A feature-rich, containerized Discord Anonymous Confession Bot built with Python (`discord.py` v2.x), Redis caching layer, and SQLite persistent storage.
 
-**Support server:** [discord.gg/CbM8AAUcua](https://discord.gg/CbM8AAUcua)
+**Support server:** [discord.gg/PNDPCfJPFe](https://discord.gg/PNDPCfJPFe)
 
 ---
 
@@ -26,7 +26,7 @@ DISCORD_TOKEN=your_actual_discord_bot_token
 BOT_USER_ID=1508460938255138981
 STAFF_GUILD_ID=1534941712177168384
 BOT_OWNER_ID=your_discord_user_id
-SUPPORT_SERVER_URL=https://discord.gg/CbM8AAUcua
+SUPPORT_SERVER_URL=https://discord.gg/PNDPCfJPFe
 ```
 
 ---
@@ -87,4 +87,4 @@ Bot user ID: `1508460938255138981`
    - Permissions: `Send Messages`, `Manage Messages`, `Embed Links`, `Read Message History`, `Use Slash Commands`, `View Audit Log`
 5. Invite the bot to your server using the generated URL.
 
-Need help? Join the [support server](https://discord.gg/CbM8AAUcua).
+Need help? Join the [support server](https://discord.gg/PNDPCfJPFe).

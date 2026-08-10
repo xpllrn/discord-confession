@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docs — Confession Discord Bot</title>
+  <meta name="description" content="Getting started with Confession: invite, /setup, review queues, and customization.">
+  <meta name="theme-color" content="#9b7bd1">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://confess.adore.rest/docs/">
+  <meta property="og:title" content="Docs — Confession">
+  <meta property="og:description" content="Short documentation and getting-started guide for Confession.">
+  <meta property="og:image" content="https://confess.adore.rest/assets/og-card.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Docs — Confession">
+  <meta name="twitter:description" content="Short documentation and getting-started guide for Confession.">
+  <meta name="twitter:image" content="https://confess.adore.rest/assets/og-card.png">
+
+  <link rel="icon" href="/assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav class="navbar" aria-label="Primary">
+    <div class="nav-inner">
+      <a href="/" class="brand">
+        <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
+        <span class="brand-name">Confession</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/commands/">Commands</a></li>
+        <li><a href="/docs/" class="active">Docs</a></li>
+        <li><a href="/status/">Status</a></li>
+        <li><a href="/privacy/">Privacy</a></li>
+        <li><a href="/tos/">ToS</a></li>
+        <li><a href="/support/">Support</a></li>
+        <li class="nav-cta"><a class="btn btn-primary" href="/invite/">Invite</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1 class="section-title">Documentation</h1>
+      <p class="section-sub">A short path from invite to your first anonymous confession.</p>
+    </div>
+  </header>
+
+  <main class="section-tight">
+    <div class="container docs-layout">
+      <aside class="docs-side">
+        <h2>On this page</h2>
+        <ul>
+          <li><a href="#invite">Invite</a></li>
+          <li><a href="#setup">Setup</a></li>
+          <li><a href="#confess">Confessing</a></li>
+          <li><a href="#review">Review mode</a></li>
+          <li><a href="#panel">Customization</a></li>
+          <li><a href="#safety">Safety</a></li>
+          <li><a href="#help">Need help?</a></li>
+        </ul>
+      </aside>
+
+      <div class="docs-main">
+        <section id="invite">
+          <h2>1. Invite Confession</h2>
+          <p>Use the official invite so Confession can post messages and register slash commands:</p>
+          <p><a class="btn btn-primary" href="/invite/">Open invite</a></p>
+          <p>Someone with <strong>Manage Server</strong> must authorize the bot.</p>
+        </section>
+
+        <section id="setup">
+          <h2>2. Run <code>/setup</code></h2>
+          <p>Administrators should run <code>/setup</code> once after inviting:</p>
+          <ol>
+            <li>Select the channel(s) where confessions should appear.</li>
+            <li>Optionally pick a private review channel for staff approval.</li>
+            <li>Confirm — Confession is ready for <code>/confess</code>.</li>
+          </ol>
+        </section>
+
+        <section id="confess">
+          <h2>3. Submit a confession</h2>
+          <p>Anyone in the server can run <code>/confess</code>. A modal asks for the text (and optional image). The post is anonymous — Discord usernames and avatars are never shown on the confession.</p>
+          <p>Each published confession includes buttons to confess again, reply in a thread, or report the post.</p>
+        </section>
+
+        <section id="review">
+          <h2>Review mode</h2>
+          <p>If you configured a review channel during setup, new submissions go there first. Staff can approve or reject before anything is posted publicly.</p>
+        </section>
+
+        <section id="panel">
+          <h2>Customization with <code>/panel</code></h2>
+          <p>Administrators can open <code>/panel</code> to:</p>
+          <ul>
+            <li>Update the bot’s per-server display name, avatar, banner, and bio</li>
+            <li>Manage blocked words that should never appear in confessions</li>
+          </ul>
+        </section>
+
+        <section id="safety">
+          <h2>Safety notes</h2>
+          <ul>
+            <li>Follow Discord’s Terms of Service and your server rules.</li>
+            <li>Use Report on posts that violate community standards.</li>
+            <li>Enable review mode for communities that need extra moderation.</li>
+            <li>Author identities are stored only for abuse investigation by the bot operator — never shown in public posts.</li>
+          </ul>
+        </section>
+
+        <section id="help">
+          <h2>Need help?</h2>
+          <p>Join the support Discord, browse the <a href="/commands/">commands list</a>, or read the <a href="/privacy/">privacy policy</a>.</p>
+          <p><a class="btn btn-secondary" href="/support/">Support server</a></p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="/" class="brand">
+          <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
+          <span class="brand-name">Confession</span>
+        </a>
+        <p class="footer-brand-desc">Anonymous Discord confessions. Part of the adore.rest ecosystem.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/docs/">Documentation</a></li>
+          <li><a href="/commands/">Commands</a></li>
+          <li><a href="/status/">Status</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal &amp; help</h4>
+        <ul>
+          <li><a href="/privacy/">Privacy Policy</a></li>
+          <li><a href="/tos/">Terms of Service</a></li>
+          <li><a href="/support/">Support Discord</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 Confession · confess.adore.rest</p>
+    </div>
+  </footer>
+  <script src="/app.js"></script>
+</body>
+</html>
