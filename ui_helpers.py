@@ -94,7 +94,7 @@ async def handle_interaction_error(
 
 
 async def respond_interaction_error(interaction, message: str):
-    """Simple ephemeral text (permissions, validation — no error code)."""
+    """Simple ephemeral text (permissions, validation, no error code)."""
     try:
         if interaction.response.is_done():
             await interaction.followup.send(message, ephemeral=True)

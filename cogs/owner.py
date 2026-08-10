@@ -171,7 +171,7 @@ class OwnerCog(commands.Cog, name="Owner"):
             body = body[:3500] + "\n…"
 
         await interaction.response.send_message(
-            f"**Confession logs** — guild `{gid}` (latest {len(rows)})\n\n{body}",
+            f"**Confession logs**, guild `{gid}` (latest {len(rows)})\n\n{body}",
             ephemeral=True,
         )
 
@@ -224,7 +224,7 @@ class OwnerCog(commands.Cog, name="Owner"):
 
         filter_label = f" confession #{confession_id}" if confession_id else ""
         await interaction.response.send_message(
-            f"**Reply logs** — guild `{gid}`{filter_label} (latest {len(rows)})\n\n{body}",
+            f"**Reply logs**, guild `{gid}`{filter_label} (latest {len(rows)})\n\n{body}",
             ephemeral=True,
         )
 
@@ -236,8 +236,8 @@ class OwnerCog(commands.Cog, name="Owner"):
             try:
                 user = await self.bot.fetch_user(author_id)
             except Exception:
-                return f"<@{author_id}> (`{author_id}`) — could not fetch user"
-        return f"{user.mention} — `{user}` (`{user.id}`)"
+                return f"<@{author_id}> (`{author_id}`), could not fetch user"
+        return f"{user.mention}, `{user}` (`{user.id}`)"
 
 
 async def setup(bot):

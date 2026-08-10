@@ -16,9 +16,7 @@ from discord.ui import (
     ActionRow,
 )
 
-from config import Config
 from emojis import APPROVE, DENY, WARN, APPROVE_EMOJI, DENY_EMOJI, TICKET
-from logutil import send_report_log
 from ui_helpers import schedule_error_report, handle_interaction_error, is_unknown_interaction
 
 logger = logging.getLogger(__name__)
@@ -107,14 +105,7 @@ class ConfessionMessageView(LayoutView):
             )
             reply_btn.callback = self.reply_callback
 
-            report_btn = Button(
-                label="Report",
-                style=discord.ButtonStyle.grey,
-                custom_id=f"report_btn_{confession_num}",
-            )
-            report_btn.callback = self.report_callback
-
-            button_row = ActionRow(confess_btn, reply_btn, report_btn)
+            button_row = ActionRow(confess_btn, reply_btn)
 
         self.add_item(
             build_confession_container(confession_num, content, image_url, button_row)
@@ -134,82 +125,6 @@ class ConfessionMessageView(LayoutView):
             err_view = LayoutView()
             err_view.add_item(Container(TextDisplay(f"{DENY} Could not open reply form: {e}")))
             await interaction.response.send_message(view=err_view, ephemeral=True)
-
-    async def report_callback(self, interaction: discord.Interaction):
-        try:
-            modal = ReportModal(self.bot, self.confession_num)
-            await interaction.response.send_modal(modal)
-        except Exception as e:
-            await _report_error(self.bot, e, interaction, "report_button")
-            err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay(f"{DENY} Could not open report form: {e}")))
-            if not interaction.response.is_done():
-                await interaction.response.send_message(view=err_view, ephemeral=True)
-
-
-class ReportModal(Modal, title="Report Confession"):
-    reason_input = TextInput(
-        label="Reason",
-        style=discord.TextStyle.paragraph,
-        placeholder="Why are you reporting this confession?",
-        required=True,
-        min_length=3,
-        max_length=500,
-    )
-
-    def __init__(self, bot, confession_num: int):
-        super().__init__()
-        self.bot = bot
-        self.confession_num = confession_num
-
-    async def on_submit(self, interaction: discord.Interaction):
-        try:
-            record = await self.bot.db.get_confession(interaction.guild_id, self.confession_num)
-            if not record:
-                err_view = LayoutView()
-                err_view.add_item(Container(TextDisplay(f"{DENY} Could not find that confession.")))
-                await interaction.response.send_message(view=err_view, ephemeral=True)
-                return
-
-            author_id = record.get("author_id") or 0
-            author_name = "unknown"
-            if author_id:
-                user = self.bot.get_user(author_id)
-                if user is None:
-                    try:
-                        user = await self.bot.fetch_user(author_id)
-                    except Exception:
-                        user = None
-                if user:
-                    author_name = str(user)
-
-            await send_report_log(
-                self.bot,
-                channel_id=Config.REPORT_LOG_CHANNEL_ID,
-                confession_num=self.confession_num,
-                confession_content=record.get("content", ""),
-                author_id=author_id,
-                author_name=author_name,
-                reporter=interaction.user,
-                reason=self.reason_input.value.strip(),
-                guild=interaction.guild,
-            )
-
-            ok_view = LayoutView()
-            ok_view.add_item(Container(
-                TextDisplay(f"## {APPROVE} Report Submitted"),
-                Separator(),
-                TextDisplay("Thanks — your report has been sent to the bot staff for review."),
-            ))
-            await interaction.response.send_message(view=ok_view, ephemeral=True)
-        except Exception as e:
-            await _report_error(self.bot, e, interaction, "report")
-            err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay(f"{DENY} Failed to submit report. Please try again.")))
-            if interaction.response.is_done():
-                await interaction.followup.send(view=err_view, ephemeral=True)
-            else:
-                await interaction.response.send_message(view=err_view, ephemeral=True)
 
 
 class ReplyModal(Modal, title="Reply to Confession"):
@@ -752,7 +667,7 @@ class ConfessionsCog(commands.Cog, name="Confessions"):
             try:
                 if not interaction.response.is_done():
                     await interaction.response.send_message(
-                        "Bot is still starting — wait a moment and try again.",
+                        "Bot is still starting, wait a moment and try again.",
                         ephemeral=True,
                     )
             except discord.HTTPException:
@@ -764,7 +679,7 @@ class ConfessionsCog(commands.Cog, name="Confessions"):
         except discord.NotFound as e:
             if is_unknown_interaction(e):
                 logger.warning(
-                    "Confess interaction expired (10062) — bot may have been restarting "
+                    "Confess interaction expired (10062), bot may have been restarting "
                     "or the connection was slow. Ask the user to run /confess again."
                 )
                 schedule_error_report(self.bot, e, interaction, "confess")

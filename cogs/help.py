@@ -57,7 +57,7 @@ class HelpCog(commands.Cog, name="Help"):
 
             await interaction.response.send_message(view=view, ephemeral=True)
         except Exception as e:
-            logger.exception("Failed to send /help LayoutView — falling back to embed")
+            logger.exception("Failed to send /help LayoutView, falling back to embed")
             from ui_helpers import schedule_error_report
 
             schedule_error_report(self.bot, e, interaction, "help")

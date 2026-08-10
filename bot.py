@@ -57,7 +57,7 @@ class ConfessionBot(commands.Bot):
             command_name = interaction.command.name if interaction.command else "unknown"
             if is_unknown_interaction(original if isinstance(original, BaseException) else error):
                 logger.warning(
-                    f"Expired interaction for command '{command_name}' (10062) — not responding"
+                    f"Expired interaction for command '{command_name}' (10062), not responding"
                 )
                 return
             await handle_interaction_error(
@@ -108,7 +108,7 @@ class ConfessionBot(commands.Bot):
         logger.info(f"Status set to Watching {Config.BOT_STATUS}")
         logger.info("Bot is ready and active!")
         if not Config.BOT_OWNER_ID:
-            logger.warning("BOT_OWNER_ID is not set — /lookup will deny everyone.")
+            logger.warning("BOT_OWNER_ID is not set, /lookup will deny everyone.")
 
     async def close(self):
         logger.info("Shutting down bot and closing database/cache connections...")
