@@ -3,21 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy — Confession</title>
-  <meta name="description" content="Privacy Policy for the Confession Discord bot: what data is stored and how it is used.">
+  <title>Privacy — Confession</title>
+  <meta name="description" content="Privacy for Confession.">
   <meta name="theme-color" content="#9b7bd1">
-
+  <link rel="canonical" href="https://confess.adore.rest/privacy/">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://confess.adore.rest/privacy/">
-  <meta property="og:title" content="Privacy Policy — Confession">
-  <meta property="og:description" content="How Confession handles confession content, IDs, and server configuration.">
+  <meta property="og:title" content="Privacy — Confession">
+  <meta property="og:description" content="Privacy for Confession.">
   <meta property="og:image" content="https://confess.adore.rest/assets/og-card.png">
-
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Privacy Policy — Confession">
-  <meta name="twitter:description" content="How Confession handles confession content, IDs, and server configuration.">
+  <meta name="twitter:title" content="Privacy — Confession">
+  <meta name="twitter:description" content="Privacy for Confession.">
   <meta name="twitter:image" content="https://confess.adore.rest/assets/og-card.png">
-
   <link rel="icon" href="/assets/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
@@ -25,117 +23,56 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <nav class="navbar" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="/" class="brand">
-        <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
-        <span class="brand-name">Confession</span>
-      </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
-        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-      <ul class="nav-links" id="nav-menu">
-        <li><a href="/">Home</a></li>
-        <li><a href="/commands/">Commands</a></li>
-        <li><a href="/docs/">Docs</a></li>
-        <li><a href="/status/">Status</a></li>
-        <li><a href="/privacy/" class="active">Privacy</a></li>
-        <li><a href="/tos/">ToS</a></li>
-        <li><a href="/support/">Support</a></li>
-        <li class="nav-cta"><a class="btn btn-primary" href="/invite/">Invite</a></li>
-      </ul>
-    </div>
-  </nav>
 
-  <header class="page-header">
-    <div class="container">
-      <h1 class="section-title">Privacy Policy</h1>
-      <p class="section-sub">How Confession treats your data with care.</p>
+  <header class="nav">
+    <div class="shell nav-inner">
+      <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="38" height="38"><span>Confession</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+      <ul class="nav-links">
+        <li><a href="/" class="">Home</a></li><li><a href="/commands/" class="">Commands</a></li><li><a href="/docs/" class="">Docs</a></li><li><a href="/status/" class="">Status</a></li><li><a href="/support/" class="">Support</a></li>
+        <li><a class="btn btn-primary" href="/invite/" style="padding:0.55rem 0.95rem;color:#fff">Invite</a></li>
+      </ul>
     </div>
   </header>
 
-  <main>
-    <div class="container">
-      <article class="prose-panel">
-        <p class="meta">Last updated: August 10, 2026 · Applies to the Confession Discord bot and confess.adore.rest</p>
-
-        <h2>Overview</h2>
-        <p>Confession (“the bot”, “we”) provides anonymous confession features for Discord servers. Public confession posts do not display Discord usernames or avatars. This policy explains what we store to operate the service safely.</p>
-
-        <h2>Information we process</h2>
-        <ul>
-          <li><strong>Discord identifiers</strong> — guild IDs, channel IDs, message IDs, and user IDs needed to deliver confessions, replies, reports, and configuration.</li>
-          <li><strong>Confession &amp; reply content</strong> — text (and optional image URLs) you submit, stored so posts can be moderated, looked up for abuse, and recovered if needed.</li>
-          <li><strong>Server settings</strong> — confession/review channels, word filters, and customization choices set via <code>/setup</code> and <code>/panel</code>.</li>
-          <li><strong>Operational logs</strong> — limited join/leave, error, and report events for reliability and safety.</li>
-        </ul>
-
-        <h2>Anonymity</h2>
-        <p>Published confessions are anonymous to other server members. Author identity is retained in private storage for abuse investigation by the bot operator and is not shown on public posts. Owner-only commands such as <code>/lookup</code> exist solely for safety and compliance.</p>
-
-        <h2>How we use data</h2>
-        <ul>
-          <li>To post and thread anonymous confessions and replies</li>
-          <li>To power optional staff review and word filtering</li>
-          <li>To process reports and investigate abuse</li>
-          <li>To maintain and improve the bot</li>
-        </ul>
-
-        <h2>Sharing</h2>
-        <p>We do not sell personal data. Information may be disclosed if required by law, or to Discord when necessary to enforce platform rules. Hosting providers that process infrastructure logs may transiently handle technical metadata.</p>
-
-        <h2>Retention</h2>
-        <p>Confession records and configuration are kept while needed to operate the bot and handle safety requests. Data for servers that remove Confession may be deleted or anonymized within a reasonable period, unless retention is required for ongoing investigations or legal obligations.</p>
-
-        <h2>Your choices</h2>
-        <ul>
-          <li>Do not submit information you do not want stored for moderation purposes.</li>
-          <li>Server admins can remove the bot at any time.</li>
-          <li>Contact us via the <a href="/support/">support Discord</a> for privacy questions or deletion requests related to your Discord user ID where feasible.</li>
-        </ul>
-
-        <h2>Children</h2>
-        <p>Confession is intended for Discord communities that follow Discord’s age requirements. Do not use the bot if you are not permitted to use Discord.</p>
-
-        <h2>Changes</h2>
-        <p>We may update this policy. The “Last updated” date above will change when we do. Continued use after updates constitutes acceptance of the revised policy.</p>
-
-        <h2>Contact</h2>
-        <p>Questions: <a href="/support/">discord.gg/PNDPCfJPFe</a> · Website: <a href="https://confess.adore.rest">confess.adore.rest</a></p>
-      </article>
+  <main class="shell">
+    <div class="page-hero">
+      <span class="eyebrow">legal</span>
+      <h1>Privacy</h1>
+      <p>Updated August 2026</p>
+    </div>
+    <div class="panel prose" style="margin-bottom:2.5rem">
+      <p>Confession stores server configuration, anonymous confession metadata needed for moderation, and report data. Author identity is kept private from other members. Request deletion in the support server.</p>
+      <p>Questions? Reach us in the <a href="/support/" style="color:var(--accent-deep);font-weight:700">support server</a>.</p>
     </div>
   </main>
 
   <footer class="footer">
-    <div class="container footer-grid">
+    <div class="shell footer-grid">
       <div>
-        <a href="/" class="brand">
-          <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
-          <span class="brand-name">Confession</span>
-        </a>
-        <p class="footer-brand-desc">Anonymous Discord confessions. Part of the adore.rest ecosystem.</p>
+        <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="34" height="34"><span>Confession</span></a>
+        <p style="color:var(--muted);margin:0.8rem 0 0;max-width:28rem">Anonymous confessions for Discord — soft, private, simple. Part of the adore.rest network.</p>
       </div>
       <div>
         <h4>Explore</h4>
         <ul>
-          <li><a href="/docs/">Documentation</a></li>
           <li><a href="/commands/">Commands</a></li>
+          <li><a href="/docs/">Docs</a></li>
           <li><a href="/status/">Status</a></li>
+          <li><a href="/invite/">Invite</a></li>
         </ul>
       </div>
       <div>
-        <h4>Legal &amp; help</h4>
+        <h4>Legal & help</h4>
         <ul>
-          <li><a href="/privacy/">Privacy Policy</a></li>
-          <li><a href="/tos/">Terms of Service</a></li>
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/tos/">Terms</a></li>
           <li><a href="/support/">Support Discord</a></li>
+          <li><a href="https://adore.rest" rel="noopener">adore.rest</a></li>
         </ul>
       </div>
     </div>
-    <div class="container footer-bottom">
-      <p>&copy; 2026 Confession · confess.adore.rest</p>
-    </div>
+    <div class="shell footer-note">© 2026 confess.adore.rest</div>
   </footer>
   <script src="/app.js"></script>
 </body>

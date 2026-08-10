@@ -4,20 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Status — Confession</title>
-  <meta name="description" content="Service status for Confession Discord bot. Static placeholder status page.">
+  <meta name="description" content="Live status for Confession.">
   <meta name="theme-color" content="#9b7bd1">
-
+  <link rel="canonical" href="https://confess.adore.rest/status/">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://confess.adore.rest/status/">
   <meta property="og:title" content="Status — Confession">
-  <meta property="og:description" content="All systems operational — Confession status page.">
+  <meta property="og:description" content="Live status for Confession.">
   <meta property="og:image" content="https://confess.adore.rest/assets/og-card.png">
-
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Status — Confession">
-  <meta name="twitter:description" content="All systems operational — Confession status page.">
+  <meta name="twitter:description" content="Live status for Confession.">
   <meta name="twitter:image" content="https://confess.adore.rest/assets/og-card.png">
-
   <link rel="icon" href="/assets/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
@@ -25,97 +23,63 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <nav class="navbar" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="/" class="brand">
-        <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
-        <span class="brand-name">Confession</span>
-      </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
-        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-      <ul class="nav-links" id="nav-menu">
-        <li><a href="/">Home</a></li>
-        <li><a href="/commands/">Commands</a></li>
-        <li><a href="/docs/">Docs</a></li>
-        <li><a href="/status/" class="active">Status</a></li>
-        <li><a href="/privacy/">Privacy</a></li>
-        <li><a href="/tos/">ToS</a></li>
-        <li><a href="/support/">Support</a></li>
-        <li class="nav-cta"><a class="btn btn-primary" href="/invite/">Invite</a></li>
-      </ul>
-    </div>
-  </nav>
 
-  <header class="page-header">
-    <div class="container">
-      <h1 class="section-title">Status</h1>
-      <p class="section-sub">A calm glance at Confession’s public services.</p>
+  <header class="nav">
+    <div class="shell nav-inner">
+      <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="38" height="38"><span>Confession</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+      <ul class="nav-links">
+        <li><a href="/" class="">Home</a></li><li><a href="/commands/" class="">Commands</a></li><li><a href="/docs/" class="">Docs</a></li><li><a href="/status/" class="active">Status</a></li><li><a href="/support/" class="">Support</a></li>
+        <li><a class="btn btn-primary" href="/invite/" style="padding:0.55rem 0.95rem;color:#fff">Invite</a></li>
+      </ul>
     </div>
   </header>
 
-  <main class="section-tight">
-    <div class="container">
-      <div class="status-panel">
-        <div class="status-pill">
-          <span class="status-dot" aria-hidden="true"></span>
-          All systems operational
-        </div>
-        <h2>Everything looks soft</h2>
-        <p>No active incidents reported on this static status page.</p>
-        <div class="status-rows">
-          <div class="status-row">
-            <span>Bot gateway</span>
-            <span>Operational</span>
-          </div>
-          <div class="status-row">
-            <span>Slash commands</span>
-            <span>Operational</span>
-          </div>
-          <div class="status-row">
-            <span>Website (confess.adore.rest)</span>
-            <span>Operational</span>
-          </div>
-          <div class="status-row">
-            <span>Support Discord</span>
-            <span>Operational</span>
-          </div>
-        </div>
-        <p class="status-note">This is a static placeholder status page and is not live-monitored. For outages or questions, visit the <a href="/support/">support server</a>.</p>
-      </div>
+  <main class="shell" data-status-root data-origins='["https://api.confess.adore.rest", ""]'>
+    <div class="page-hero">
+      <span class="eyebrow">live</span>
+      <h1>System status</h1>
+      <p>Pulled from the bot’s status API every 15 seconds. No placeholder uptime.</p>
     </div>
+    <div class="status-banner is-loading" data-status-banner>
+      <div><span class="status-dot"></span><strong data-status-title>Checking systems…</strong></div>
+      <span data-status-updated style="color:var(--muted);font-size:0.88rem">—</span>
+    </div>
+    <div class="metrics">
+      <div class="metric"><span>Latency</span><strong data-metric-latency>—</strong></div>
+      <div class="metric"><span>Servers</span><strong data-metric-guilds>—</strong></div>
+      <div class="metric"><span>Uptime</span><strong data-metric-uptime>—</strong></div>
+    </div>
+    <div class="svc-list" data-services></div>
+    <p style="color:var(--muted);font-size:0.9rem;margin:1.25rem 0 2.5rem">Need help? <a href="/support/" style="color:var(--accent-deep);font-weight:700">Join support</a>.</p>
   </main>
 
   <footer class="footer">
-    <div class="container footer-grid">
+    <div class="shell footer-grid">
       <div>
-        <a href="/" class="brand">
-          <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
-          <span class="brand-name">Confession</span>
-        </a>
-        <p class="footer-brand-desc">Anonymous Discord confessions. Part of the adore.rest ecosystem.</p>
+        <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="34" height="34"><span>Confession</span></a>
+        <p style="color:var(--muted);margin:0.8rem 0 0;max-width:28rem">Anonymous confessions for Discord — soft, private, simple. Part of the adore.rest network.</p>
       </div>
       <div>
         <h4>Explore</h4>
         <ul>
-          <li><a href="/docs/">Documentation</a></li>
           <li><a href="/commands/">Commands</a></li>
+          <li><a href="/docs/">Docs</a></li>
           <li><a href="/status/">Status</a></li>
+          <li><a href="/invite/">Invite</a></li>
         </ul>
       </div>
       <div>
-        <h4>Legal &amp; help</h4>
+        <h4>Legal & help</h4>
         <ul>
-          <li><a href="/privacy/">Privacy Policy</a></li>
-          <li><a href="/tos/">Terms of Service</a></li>
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/tos/">Terms</a></li>
           <li><a href="/support/">Support Discord</a></li>
+          <li><a href="https://adore.rest" rel="noopener">adore.rest</a></li>
         </ul>
       </div>
     </div>
-    <div class="container footer-bottom">
-      <p>&copy; 2026 Confession · confess.adore.rest</p>
-    </div>
+    <div class="shell footer-note">© 2026 confess.adore.rest</div>
   </footer>
   <script src="/app.js"></script>
 </body>

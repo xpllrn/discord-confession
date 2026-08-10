@@ -28,6 +28,7 @@ class ConfessionBot(commands.Bot):
         self.db = DatabaseManager(Config.DATABASE_PATH)
         self.cache = CacheManager()
         self._warmup_done = asyncio.Event()
+        self._status_api_runner = None
 
     async def setup_hook(self):
         logger.info("Initializing Database and Redis Cache...")
@@ -77,6 +78,15 @@ class ConfessionBot(commands.Bot):
         else:
             logger.info("Skipping slash command sync (SYNC_COMMANDS_ON_START=0).")
 
+        try:
+            from status_api import start_status_api
+            self._status_api_runner = await start_status_api(self)
+            if self._status_api_runner:
+                logger.info("Status API started.")
+        except Exception as e:
+            logger.warning(f"Status API failed to start: {e}")
+            self._status_api_runner = None
+
     async def on_connect(self):
         """Warm the HTTP session before users can invoke commands."""
         asyncio.create_task(self._warmup_http())
@@ -112,6 +122,11 @@ class ConfessionBot(commands.Bot):
 
     async def close(self):
         logger.info("Shutting down bot and closing database/cache connections...")
+        try:
+            from status_api import stop_status_api
+            await stop_status_api(self._status_api_runner)
+        except Exception:
+            pass
         await self.cache.close()
         await super().close()
 

@@ -3,206 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confession — Anonymous Discord Confessions</title>
-  <meta name="description" content="Confession is a Discord bot for anonymous server confessions — soft, private, and easy to set up.">
+  <title>Confession — Anonymous confessions for Discord — soft, private, simple.</title>
+  <meta name="description" content="Share anonymous confessions in your Discord server with moderator tools and one-click setup.">
   <meta name="theme-color" content="#9b7bd1">
-
+  <link rel="canonical" href="https://confess.adore.rest/">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://confess.adore.rest/">
-  <meta property="og:title" content="Confession — Anonymous Discord Confessions">
-  <meta property="og:description" content="Share secrets anonymously in your Discord server. Soft lavender vibes, moderator tools, and one-click setup.">
+  <meta property="og:title" content="Confession — Anonymous confessions for Discord — soft, private, simple.">
+  <meta property="og:description" content="Share anonymous confessions in your Discord server with moderator tools and one-click setup.">
   <meta property="og:image" content="https://confess.adore.rest/assets/og-card.png">
-
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Confession — Anonymous Discord Confessions">
-  <meta name="twitter:description" content="Share secrets anonymously in your Discord server.">
+  <meta name="twitter:title" content="Confession — Anonymous confessions for Discord — soft, private, simple.">
+  <meta name="twitter:description" content="Share anonymous confessions in your Discord server with moderator tools and one-click setup.">
   <meta name="twitter:image" content="https://confess.adore.rest/assets/og-card.png">
-
   <link rel="icon" href="/assets/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/assets/icon-512.png">
-
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div class="motif-bg" aria-hidden="true">
-    <svg class="m1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-    <svg class="m2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.2 3.6L17 7l-3.8 1.4L12 12l-1.2-3.6L7 7l3.8-1.4L12 2zm7 9l.8 2.4L22 14l-2.2.8L19 17l-.8-2.2L16 14l2.2-.8L19 11zM5 13l.7 2.1L8 16l-2.3.7L5 19l-.7-2.3L2 16l2.3-.9L5 13z"/></svg>
-    <svg class="m3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h12a4 4 0 0 1 4 4v.5a3.5 3.5 0 0 1-3.5 3.5H10l-4 4v-4H7A3 3 0 0 1 4 11V6z"/><path d="M7 9h8M7 12h5"/></svg>
-    <svg class="m4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-    <svg class="m5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.2 3.6L17 7l-3.8 1.4L12 12l-1.2-3.6L7 7l3.8-1.4L12 2z"/></svg>
-    <svg class="m6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 8l9 6 9-6"/></svg>
-  </div>
 
-  <nav class="navbar" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="/" class="brand">
-        <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
-        <span class="brand-name">Confession</span>
-      </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
-        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-      <ul class="nav-links" id="nav-menu">
-        <li><a href="/" class="active">Home</a></li>
-        <li><a href="/commands/">Commands</a></li>
-        <li><a href="/docs/">Docs</a></li>
-        <li><a href="/status/">Status</a></li>
-        <li><a href="/privacy/">Privacy</a></li>
-        <li><a href="/tos/">ToS</a></li>
-        <li><a href="/support/">Support</a></li>
-        <li class="nav-cta"><a class="btn btn-primary" href="/invite/">Invite</a></li>
+  <header class="nav">
+    <div class="shell nav-inner">
+      <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="38" height="38"><span>Confession</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+      <ul class="nav-links">
+        <li><a href="/" class="active">Home</a></li><li><a href="/commands/" class="">Commands</a></li><li><a href="/docs/" class="">Docs</a></li><li><a href="/status/" class="">Status</a></li><li><a href="/support/" class="">Support</a></li>
+        <li><a class="btn btn-primary" href="/invite/" style="padding:0.55rem 0.95rem;color:#fff">Invite</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <header class="hero">
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <h1 class="hero-wordmark">Confession</h1>
-        <svg class="hero-underline" viewBox="0 0 220 12" fill="none" aria-hidden="true">
-          <path d="M2 8c40-6 80-8 110-4s70 2 106-2" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-        </svg>
-        <p class="hero-lede">
-          Anonymous confessions for Discord — soft, private, and ready in a few taps.
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="/invite/">Invite Confession</a>
-          <a class="btn btn-secondary" href="/docs/">Read the docs</a>
-        </div>
-      </div>
-      <div class="hero-visual">
-        <svg class="hero-sparkle s1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l1.4 4.2L18 7.6l-4.6 1.4L12 13l-1.4-4L6 7.6l4.6-1.4L12 2zm7 9l.9 2.6L22 14.5l-2.1.7L19 18l-.9-2.8L16 14.5l2.1-.9L19 11z"/></svg>
-        <svg class="hero-sparkle s2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        <svg class="hero-sparkle s3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 8l9 6 9-6"/></svg>
-        <img class="hero-cat" src="/assets/cat.png" alt="Confession cat mascot" width="420" height="420">
-      </div>
-    </div>
-    <div class="cloud-edge" aria-hidden="true">
-      <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-        <path fill="currentColor" d="M0,40 C120,70 240,10 360,40 C480,70 600,15 720,42 C840,70 960,20 1080,45 C1200,70 1320,25 1440,48 L1440,80 L0,80 Z"/>
-      </svg>
     </div>
   </header>
 
-  <section class="section" id="features">
-    <div class="container">
-      <h2 class="section-title">Why servers keep Confession</h2>
-      <p class="section-sub">A calm space to share what’s hard to say out loud — with tools mods actually need.</p>
-      <div class="feature-grid">
-        <article class="feature">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 8l9 6 9-6"/></svg>
-          </div>
-          <h3>Truly anonymous</h3>
-          <p>Members submit with <code>/confess</code>. Posts never show who wrote them — only the confession itself.</p>
-        </article>
-        <article class="feature">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <h3>Optional review</h3>
-          <p>Route submissions through a staff channel for approve / reject before they go public.</p>
-        </article>
-        <article class="feature">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </div>
-          <h3>Replies &amp; reports</h3>
-          <p>Each confession can open a reply thread, and members can report posts that cross the line.</p>
-        </article>
-        <article class="feature">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </div>
-          <h3>Custom panel</h3>
-          <p>Admins tune avatar, banner, bio, and blocked words from <code>/panel</code> without leaving Discord.</p>
-        </article>
-        <article class="feature">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
-          </div>
-          <h3>Word filter</h3>
-          <p>Block specific phrases so confessions stay within your community’s rules.</p>
-        </article>
-        <article class="feature">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.2 3.6L17 7l-3.8 1.4L12 12l-1.2-3.6L7 7l3.8-1.4L12 2z"/></svg>
-          </div>
-          <h3>Part of Adore</h3>
-          <p>Same cozy family as Cupid — lavender paper vibes, hosted at <code>confess.adore.rest</code>.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section section-tight">
-    <div class="container">
-      <h2 class="section-title">Up and running</h2>
-      <p class="section-sub">Three soft steps from invite to first confession.</p>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">01</div>
-          <h3>Invite the bot</h3>
-          <p>Add Confession with the right slash-command permissions for your server.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">02</div>
-          <h3>Run <code>/setup</code></h3>
-          <p>Pick confession channels and choose whether posts need staff review.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">03</div>
-          <h3>Say something soft</h3>
-          <p>Members use <code>/confess</code> — or the buttons on each post — to share and reply.</p>
-        </div>
-      </div>
-      <div class="cta-band">
+  <main>
+    <section class="shell hero">
+      <div>
+        <span class="eyebrow">adore.rest network</span>
+        <h1>Confession</h1>
+        <p class="hero-lede">Members send secrets anonymously. Moderators stay in control. Setup takes a minute.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="/invite/">Invite Confession</a>
           <a class="btn btn-secondary" href="/commands/">Browse commands</a>
         </div>
       </div>
-    </div>
-  </section>
+      <div class="hero-visual">
+        <img class="hero-cat" src="/assets/cat.png" alt="Confession cat mascot" width="420" height="420">
+      </div>
+    </section>
+    <section class="section">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Built soft. Works hard.</h2>
+          <p>Anonymous confessions for Discord — soft, private, simple.</p>
+        </div>
+        <div class="feature-grid"><article class="feature"><h3>Anonymous posts</h3><p>Confessions publish without revealing the author.</p></article><article class="feature"><h3>Quick setup</h3><p>/setup walks you through channels and permissions.</p></article><article class="feature"><h3>Custom panels</h3><p>/panel lets you brand the confession button.</p></article><article class="feature"><h3>Safe tools</h3><p>Report flows and admin controls keep things tidy.</p></article></div>
+      </div>
+    </section>
+  </main>
 
   <footer class="footer">
-    <div class="container footer-grid">
+    <div class="shell footer-grid">
       <div>
-        <a href="/" class="brand">
-          <img class="brand-mark" src="/assets/cat.png" alt="" width="38" height="38">
-          <span class="brand-name">Confession</span>
-        </a>
-        <p class="footer-brand-desc">Anonymous Discord confessions. Part of the adore.rest ecosystem.</p>
+        <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="34" height="34"><span>Confession</span></a>
+        <p style="color:var(--muted);margin:0.8rem 0 0;max-width:28rem">Anonymous confessions for Discord — soft, private, simple. Part of the adore.rest network.</p>
       </div>
       <div>
         <h4>Explore</h4>
         <ul>
-          <li><a href="/docs/">Documentation</a></li>
           <li><a href="/commands/">Commands</a></li>
+          <li><a href="/docs/">Docs</a></li>
           <li><a href="/status/">Status</a></li>
-          <li><a href="https://adore.rest" rel="noopener">Adore ecosystem</a></li>
+          <li><a href="/invite/">Invite</a></li>
         </ul>
       </div>
       <div>
-        <h4>Legal &amp; help</h4>
+        <h4>Legal & help</h4>
         <ul>
-          <li><a href="/privacy/">Privacy Policy</a></li>
-          <li><a href="/tos/">Terms of Service</a></li>
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/tos/">Terms</a></li>
           <li><a href="/support/">Support Discord</a></li>
-          <li><a href="/invite/">Invite bot</a></li>
+          <li><a href="https://adore.rest" rel="noopener">adore.rest</a></li>
         </ul>
       </div>
     </div>
-    <div class="container footer-bottom">
-      <p>&copy; 2026 Confession · confess.adore.rest</p>
-    </div>
+    <div class="shell footer-note">© 2026 confess.adore.rest</div>
   </footer>
-
   <script src="/app.js"></script>
 </body>
 </html>
