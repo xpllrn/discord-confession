@@ -432,11 +432,15 @@ class ReviewActionView(LayoutView):
         button_row.add_item(self.reject_btn)
 
         container = Container(
-            TextDisplay(f"## {TICKET} Review Pending Confession #{confession_num}\n\n-# Click Approve to post to confession channels or Reject to discard."),
+            TextDisplay(
+                f"# {TICKET} Review Pending Confession #{confession_num}\n\n{content_text}"
+            ),
             Separator(),
-            TextDisplay("{content_text}"),
-            button_row,
+            TextDisplay(
+                "-# Click Approve to post to confession channels or Reject to discard."
+            ),
         )
+        container.add_item(button_row)
         self.add_item(container)
 
     async def approve_callback(self, interaction: discord.Interaction):
