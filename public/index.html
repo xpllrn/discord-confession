@@ -20,9 +20,9 @@
   <link rel="icon" type="image/png" href="/assets/favicon.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=20260810d">
 </head>
-<body>
+<body class="brand-confession" style="--btn-ink:#120e1a">
 
   <header class="nav">
     <div class="shell nav-inner">
@@ -30,14 +30,15 @@
       <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
       <ul class="nav-links">
         <li><a href="/" class="active">Home</a></li><li><a href="/commands/" class="">Commands</a></li><li><a href="/docs/" class="">Docs</a></li><li><a href="/status/" class="">Status</a></li><li><a href="/support/" class="">Support</a></li>
-        <li><a class="btn btn-primary" href="/invite/" style="padding:0.5rem 0.95rem;color:#120e0b">Invite</a></li>
+        <li><a class="btn btn-primary" href="/invite/" style="padding:0.5rem 0.95rem">Invite</a></li>
       </ul>
     </div>
   </header>
 
   <main>
     <section class="shell hero">
-      <div>
+      <div class="motif" aria-hidden="true"><span class="m1" aria-hidden="true">✉</span><span class="m2" aria-hidden="true">✦</span><span class="m3" aria-hidden="true">✎</span><span class="m4" aria-hidden="true">✉</span><span class="m5" aria-hidden="true">✧</span></div>
+      <div style="position:relative;z-index:1">
         <span class="eyebrow">adore.rest network</span>
         <h1>Confession</h1>
         <p class="hero-lede">Members send secrets anonymously. Moderators stay in control. Setup takes a minute.</p>
@@ -53,8 +54,8 @@
     <section class="section">
       <div class="shell">
         <div class="section-head">
-          <h2>Built soft. Works hard.</h2>
-          <p>Anonymous confessions for Discord.</p>
+          <h2>Quiet by design.</h2>
+          <p>Anonymous posts with the moderator tools servers actually need.</p>
         </div>
         <div class="feature-rows"><div class="feature-row"><h3>Anonymous posts</h3><p>Confessions publish without revealing the author.</p></div><div class="feature-row"><h3>Quick setup</h3><p>/setup walks you through channels and permissions.</p></div><div class="feature-row"><h3>Custom panels</h3><p>/panel lets you brand the confession button.</p></div><div class="feature-row"><h3>Safe tools</h3><p>Report flows and admin controls keep things tidy.</p></div></div>
       </div>
@@ -102,6 +103,6 @@
     </div>
     <div class="shell footer-note">© 2026 confess.adore.rest</div>
   </footer>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=20260810d"></script>
 </body>
 </html>

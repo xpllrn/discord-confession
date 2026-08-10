@@ -20,9 +20,9 @@
   <link rel="icon" type="image/png" href="/assets/favicon.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=20260810d">
 </head>
-<body>
+<body class="brand-confession" style="--btn-ink:#120e1a">
 
   <header class="nav">
     <div class="shell nav-inner">
@@ -30,7 +30,7 @@
       <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
       <ul class="nav-links">
         <li><a href="/" class="">Home</a></li><li><a href="/commands/" class="active">Commands</a></li><li><a href="/docs/" class="">Docs</a></li><li><a href="/status/" class="">Status</a></li><li><a href="/support/" class="">Support</a></li>
-        <li><a class="btn btn-primary" href="/invite/" style="padding:0.5rem 0.95rem;color:#120e0b">Invite</a></li>
+        <li><a class="btn btn-primary" href="/invite/" style="padding:0.5rem 0.95rem">Invite</a></li>
       </ul>
     </div>
   </header>
@@ -39,9 +39,51 @@
     <div class="page-hero">
       <span class="eyebrow">commands</span>
       <h1>Commands</h1>
-      <p>Public member and admin commands only.</p>
+      <p>5 public commands. Search or filter — developer tools are hidden.</p>
     </div>
-    <div style="display:grid;gap:1rem;padding-bottom:2.5rem"><section class="panel cmd-group"><h2>Everyone</h2><div class="cmd-row"><div><code>/confess</code></div><div class="cmd-desc">Submit an anonymous confession to the server.</div></div><div class="cmd-row"><div><code>/help</code></div><div class="cmd-desc">Show bot info and available commands.</div></div><div class="cmd-row"><div><code>/ping</code></div><div class="cmd-desc">Check if the bot is online and show latency.</div></div></section><section class="panel cmd-group"><h2>Administrators</h2><div class="cmd-row"><div><code>/setup</code></div><div class="cmd-desc">Walk through channels and confession configuration.</div></div><div class="cmd-row"><div><code>/panel</code></div><div class="cmd-desc">Open the confession customization panel.</div></div></section></div>
+    <div class="commands-toolbar">
+      <div class="commands-search">
+        <label class="sr-only" for="cmd-search" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Search</label>
+        <input id="cmd-search" type="search" autocomplete="off" placeholder="Search commands…">
+      </div>
+      <div class="commands-select">
+        <label class="sr-only" for="cmd-cat" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Category</label>
+        <select id="cmd-cat"><option value="all">All categories</option><option value="Everyone">Everyone (3)</option><option value="Administrators">Administrators (2)</option></select>
+      </div>
+    </div>
+    <p class="commands-meta">Showing <span id="cmd-count">5</span></p>
+    <p id="cmd-empty" class="commands-empty" hidden>No commands match that search.</p>
+    <ul id="cmd-list" class="cmd-list"><li class="cmd-row" data-name="/confess" data-desc="submit an anonymous confession to the server." data-cat="Everyone">
+          <div class="cmd-row__main">
+            <span class="cmd-row__name">/confess</span>
+            <span class="cmd-row__desc">Submit an anonymous confession to the server.</span>
+            <span class="cmd-row__cat">Everyone</span>
+          </div>
+        </li><li class="cmd-row" data-name="/help" data-desc="show bot info and available commands." data-cat="Everyone">
+          <div class="cmd-row__main">
+            <span class="cmd-row__name">/help</span>
+            <span class="cmd-row__desc">Show bot info and available commands.</span>
+            <span class="cmd-row__cat">Everyone</span>
+          </div>
+        </li><li class="cmd-row" data-name="/ping" data-desc="check if the bot is online and show latency." data-cat="Everyone">
+          <div class="cmd-row__main">
+            <span class="cmd-row__name">/ping</span>
+            <span class="cmd-row__desc">Check if the bot is online and show latency.</span>
+            <span class="cmd-row__cat">Everyone</span>
+          </div>
+        </li><li class="cmd-row" data-name="/setup" data-desc="walk through channels and confession configuration." data-cat="Administrators">
+          <div class="cmd-row__main">
+            <span class="cmd-row__name">/setup</span>
+            <span class="cmd-row__desc">Walk through channels and confession configuration.</span>
+            <span class="cmd-row__cat">Administrators</span>
+          </div>
+        </li><li class="cmd-row" data-name="/panel" data-desc="open the confession customization panel." data-cat="Administrators">
+          <div class="cmd-row__main">
+            <span class="cmd-row__name">/panel</span>
+            <span class="cmd-row__desc">Open the confession customization panel.</span>
+            <span class="cmd-row__cat">Administrators</span>
+          </div>
+        </li></ul>
   </main>
 
   <footer class="footer">
@@ -71,6 +113,6 @@
     </div>
     <div class="shell footer-note">© 2026 confess.adore.rest</div>
   </footer>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=20260810d"></script>
 </body>
 </html>
