@@ -1,18 +1,61 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ui import LayoutView, Container, TextDisplay, Separator, Select, Button, Modal, TextInput
-import aiohttp
-import io
-from emojis import APPROVE, DENY, WARN, COGH, WRENCH
+from discord.ui import (
+    LayoutView,
+    Container,
+    TextDisplay,
+    Separator,
+    Select,
+    Button,
+    Modal,
+    TextInput,
+    Label,
+    FileUpload,
+)
+from emojis import APPROVE, DENY, WARN, WRENCH
 
-class AvatarModal(Modal, title="Set Bot Avatar"):
-    avatar_url = TextInput(
-        label="Image URL",
-        style=discord.TextStyle.short,
-        placeholder="Enter image URL (e.g., https://example.com/image.png)",
-        required=True,
-        max_length=500
+
+class CustomizeBotModal(Modal, title="Customize Confession Bot"):
+    name_label = Label(
+        text="Confession bot new name",
+        component=TextInput(
+            custom_id="bot_nick",
+            style=discord.TextStyle.short,
+            required=False,
+            max_length=32,
+            placeholder="Leave blank to keep the current name",
+        ),
+    )
+    avatar_label = Label(
+        text="Confession's avatar",
+        description="Upload a new server profile avatar",
+        component=FileUpload(
+            custom_id="bot_avatar",
+            required=False,
+            min_values=0,
+            max_values=1,
+        ),
+    )
+    banner_label = Label(
+        text="Confession's banner",
+        description="Upload a new server profile banner",
+        component=FileUpload(
+            custom_id="bot_banner",
+            required=False,
+            min_values=0,
+            max_values=1,
+        ),
+    )
+    bio_label = Label(
+        text="Confession's bio",
+        component=TextInput(
+            custom_id="bot_bio",
+            style=discord.TextStyle.paragraph,
+            required=False,
+            max_length=190,
+            placeholder="Short bio shown on the bot's server profile",
+        ),
     )
 
     def __init__(self, bot):
@@ -21,35 +64,70 @@ class AvatarModal(Modal, title="Set Bot Avatar"):
 
     async def on_submit(self, interaction: discord.Interaction):
         guild = interaction.guild
-        url = self.avatar_url.value.strip()
+        guild_id = interaction.guild_id
+        settings = await self.bot.db.get_guild_settings(guild_id)
+
+        nick_input = self.name_label.component.value.strip()
+        bio_input = self.bio_label.component.value.strip()
+        avatar_files = self.avatar_label.component.values
+        banner_files = self.banner_label.component.values
+
+        edit_kwargs = {}
+        if nick_input:
+            edit_kwargs["nick"] = nick_input
+        if bio_input:
+            edit_kwargs["bio"] = bio_input
+        if avatar_files:
+            edit_kwargs["avatar"] = await avatar_files[0].read()
+        if banner_files:
+            edit_kwargs["banner"] = await banner_files[0].read()
 
         try:
-            # Download the image
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url) as resp:
-                    if resp.status != 200:
-                        raise Exception(f"Could not download image (HTTP {resp.status})")
-                    image_data = await resp.read()
+            if edit_kwargs:
+                await guild.me.edit(**edit_kwargs)
 
-            # Set guild-specific avatar
-            await guild.me.edit(avatar=image_data)
-            
-            # Store avatar URL in database
-            await self.bot.db.set_guild_avatar(guild.id, url)
-            await self.bot.cache.clear_guild_config(guild.id)
+            avatar_url = settings.get("avatar_url")
+            if avatar_files:
+                avatar_url = avatar_files[0].url
+            elif edit_kwargs.get("avatar"):
+                avatar_url = guild.me.display_avatar.url
+
+            banner_url = settings.get("banner_url")
+            if banner_files:
+                banner_url = banner_files[0].url
+            elif edit_kwargs.get("banner") and guild.me.banner:
+                banner_url = guild.me.banner.url
+
+            bot_nick = nick_input or settings.get("bot_nick")
+            bot_bio = bio_input or settings.get("bot_bio")
+
+            await self.bot.db.set_guild_customization(
+                guild_id,
+                bot_nick=bot_nick,
+                avatar_url=avatar_url,
+                banner_url=banner_url,
+                bot_bio=bot_bio,
+            )
+            await self.bot.cache.clear_guild_config(guild_id)
 
             resp_view = LayoutView()
             resp_view.add_item(Container(
-                TextDisplay(f"# {APPROVE} Avatar Updated\n\nThe bot's avatar has been updated for this server!")
+                TextDisplay(
+                    f"# {APPROVE} Bot Customized\n\n"
+                    "Your confession bot profile has been updated for this server."
+                ),
             ))
             await interaction.response.send_message(view=resp_view, ephemeral=True)
-
         except Exception as e:
             err_view = LayoutView()
             err_view.add_item(Container(
-                TextDisplay(f"# {DENY} Failed to Update Avatar\n\n{str(e)}\n\nMake sure the URL is a valid image link.")
+                TextDisplay(
+                    f"# {DENY} Failed to Update Bot\n\n{str(e)}\n\n"
+                    "Make sure uploaded files are valid images and the bot has permission to change its profile."
+                ),
             ))
             await interaction.response.send_message(view=err_view, ephemeral=True)
+
 
 class AddWordModal(Modal, title="Add Blocked Words"):
     words_input = TextInput(
@@ -57,7 +135,7 @@ class AddWordModal(Modal, title="Add Blocked Words"):
         style=discord.TextStyle.short,
         placeholder="Enter words separated by commas (e.g. badword, spam, test)",
         required=True,
-        max_length=500
+        max_length=500,
     )
 
     def __init__(self, bot):
@@ -78,13 +156,14 @@ class AddWordModal(Modal, title="Add Blocked Words"):
 
         await send_filter_words_panel(interaction, self.bot, updated_words)
 
+
 class RemoveWordModal(Modal, title="Remove Blocked Words"):
     words_input = TextInput(
         label="Words to Remove",
         style=discord.TextStyle.short,
         placeholder="Enter words separated by commas to remove",
         required=True,
-        max_length=500
+        max_length=500,
     )
 
     def __init__(self, bot):
@@ -104,6 +183,7 @@ class RemoveWordModal(Modal, title="Remove Blocked Words"):
         await self.bot.cache.clear_guild_config(guild_id)
 
         await send_filter_words_panel(interaction, self.bot, updated_words)
+
 
 async def send_filter_words_panel(interaction: discord.Interaction, bot, filter_words: list[str] = None):
     guild_id = interaction.guild_id
@@ -134,7 +214,6 @@ async def send_filter_words_panel(interaction: discord.Interaction, bot, filter_
         await send_filter_words_panel(inter, bot, [])
     clear_btn.callback = clear_cb
 
-    # Buttons must be wrapped in ActionRow for Components V2
     button_row = discord.ui.ActionRow()
     button_row.add_item(add_btn)
     button_row.add_item(rem_btn)
@@ -144,7 +223,7 @@ async def send_filter_words_panel(interaction: discord.Interaction, bot, filter_
         TextDisplay(f"# {WARN} Filter Words Management"),
         Separator(),
         TextDisplay(f"{words_text}\n\nUse the buttons below to add or remove words from the filter list."),
-        button_row
+        button_row,
     )
 
     view = LayoutView()
@@ -155,6 +234,7 @@ async def send_filter_words_panel(interaction: discord.Interaction, bot, filter_
     else:
         await interaction.response.send_message(view=view, ephemeral=True)
 
+
 class PanelSelectMenu(Select):
     def __init__(self, bot):
         self.bot = bot
@@ -162,71 +242,46 @@ class PanelSelectMenu(Select):
             discord.SelectOption(
                 label="Customize",
                 value="customize",
-                description="Configure confession options and settings"
+                description="Name, avatar, banner, and bio",
             ),
             discord.SelectOption(
                 label="Filter words",
                 value="filter_words",
-                description="View and manage blocked words"
-            )
+                description="View and manage blocked words",
+            ),
         ]
         super().__init__(
             placeholder="Select a customization option...",
             min_values=1,
             max_values=1,
             options=options,
-            custom_id="panel_select_option"
+            custom_id="panel_select_option",
         )
 
     async def callback(self, interaction: discord.Interaction):
         selected = self.values[0]
         if selected == "customize":
-            # Get current guild settings
-            settings = await self.bot.db.get_guild_settings(interaction.guild_id)
-            avatar_url = settings.get("avatar_url")
-            
-            if avatar_url:
-                avatar_text = f"**Bot Avatar:**\n[Current Avatar]({avatar_url})"
-            else:
-                avatar_text = "**Bot Avatar:**\n*Using default avatar*"
-            
-            # Create avatar button
-            avatar_btn = Button(label="Change Avatar", style=discord.ButtonStyle.primary)
-            async def avatar_cb(inter: discord.Interaction):
-                await inter.response.send_modal(AvatarModal(self.bot))
-            avatar_btn.callback = avatar_cb
-            
-            button_row = discord.ui.ActionRow()
-            button_row.add_item(avatar_btn)
-            
-            container = Container(
-                TextDisplay(f"# {COGH} Customize Bot"),
-                Separator(),
-                TextDisplay(f"{avatar_text}\n\nClick the button below to upload a new avatar for this server."),
-                button_row
-            )
-            view = LayoutView()
-            view.add_item(container)
-            await interaction.response.send_message(view=view, ephemeral=True)
+            await interaction.response.send_modal(CustomizeBotModal(self.bot))
         elif selected == "filter_words":
             await send_filter_words_panel(interaction, self.bot)
+
 
 class PanelView(LayoutView):
     def __init__(self, bot):
         super().__init__(timeout=300)
-        
-        # Select menu must be wrapped in ActionRow for Components V2
+
         select_row = discord.ui.ActionRow()
         select_menu = PanelSelectMenu(bot)
         select_row.add_item(select_menu)
-        
+
         container = Container(
             TextDisplay(f"# {WRENCH} Customize your confession bot!"),
             Separator(),
             TextDisplay("Use the options below to customize the bot according to your server preferences."),
-            select_row
+            select_row,
         )
         self.add_item(container)
+
 
 class PanelCog(commands.Cog, name="Panel"):
     def __init__(self, bot):
@@ -264,6 +319,7 @@ class PanelCog(commands.Cog, name="Panel"):
                     f"{DENY} You need **Administrator** permissions to use `/panel`.",
                     ephemeral=True,
                 )
+
 
 async def setup(bot):
     await bot.add_cog(PanelCog(bot))

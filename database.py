@@ -63,9 +63,20 @@ class DatabaseManager:
 
             # Migrations for older databases
             async with db.execute("PRAGMA table_info(confessions)") as cursor:
-                columns = {row[1] for row in await cursor.fetchall()}
-            if "author_id" not in columns:
+                confession_columns = {row[1] for row in await cursor.fetchall()}
+            if "author_id" not in confession_columns:
                 await db.execute("ALTER TABLE confessions ADD COLUMN author_id INTEGER")
+            if "image_url" not in confession_columns:
+                await db.execute("ALTER TABLE confessions ADD COLUMN image_url TEXT")
+
+            async with db.execute("PRAGMA table_info(guild_settings)") as cursor:
+                guild_columns = {row[1] for row in await cursor.fetchall()}
+            if "bot_nick" not in guild_columns:
+                await db.execute("ALTER TABLE guild_settings ADD COLUMN bot_nick TEXT")
+            if "banner_url" not in guild_columns:
+                await db.execute("ALTER TABLE guild_settings ADD COLUMN banner_url TEXT")
+            if "bot_bio" not in guild_columns:
+                await db.execute("ALTER TABLE guild_settings ADD COLUMN bot_bio TEXT")
 
             await db.execute(
                 "CREATE UNIQUE INDEX IF NOT EXISTS idx_confessions_guild_num "
@@ -78,7 +89,11 @@ class DatabaseManager:
     async def get_guild_settings(self, guild_id: int) -> Dict[str, Any]:
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(
-                "SELECT confession_channels, review_channel_id, filter_words, confession_count, avatar_url FROM guild_settings WHERE guild_id = ?",
+                """
+                SELECT confession_channels, review_channel_id, filter_words, confession_count,
+                       avatar_url, bot_nick, banner_url, bot_bio
+                FROM guild_settings WHERE guild_id = ?
+                """,
                 (guild_id,)
             ) as cursor:
                 row = await cursor.fetchone()
@@ -87,20 +102,25 @@ class DatabaseManager:
                     review_channel_id = row[1]
                     filter_words = json.loads(row[2]) if row[2] else []
                     confession_count = row[3] or 0
-                    avatar_url = row[4]
                     return {
                         "confession_channels": confession_channels,
                         "review_channel_id": review_channel_id,
                         "filter_words": filter_words,
                         "confession_count": confession_count,
-                        "avatar_url": avatar_url
+                        "avatar_url": row[4],
+                        "bot_nick": row[5],
+                        "banner_url": row[6],
+                        "bot_bio": row[7],
                     }
                 return {
                     "confession_channels": [],
                     "review_channel_id": None,
                     "filter_words": [],
                     "confession_count": 0,
-                    "avatar_url": None
+                    "avatar_url": None,
+                    "bot_nick": None,
+                    "banner_url": None,
+                    "bot_bio": None,
                 }
 
     async def increment_confession_count(self, guild_id: int) -> int:
@@ -162,16 +182,18 @@ class DatabaseManager:
         content: str,
         author_id: int,
         status: str = "pending",
+        image_url: Optional[str] = None,
     ) -> int:
         async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute("""
-                INSERT INTO confessions (guild_id, confession_num, content, author_id, status)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO confessions (guild_id, confession_num, content, author_id, status, image_url)
+                VALUES (?, ?, ?, ?, ?, ?)
                 ON CONFLICT(guild_id, confession_num) DO UPDATE SET
                     content = excluded.content,
                     author_id = excluded.author_id,
-                    status = excluded.status
-            """, (guild_id, confession_num, content, author_id, status))
+                    status = excluded.status,
+                    image_url = excluded.image_url
+            """, (guild_id, confession_num, content, author_id, status, image_url))
             await db.commit()
             return cursor.lastrowid
 
@@ -186,7 +208,7 @@ class DatabaseManager:
     async def get_confession(self, guild_id: int, confession_num: int) -> Optional[Dict[str, Any]]:
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute("""
-                SELECT confession_num, content, author_id, status, created_at
+                SELECT confession_num, content, author_id, status, created_at, image_url
                 FROM confessions
                 WHERE guild_id = ? AND confession_num = ?
             """, (guild_id, confession_num)) as cursor:
@@ -199,6 +221,7 @@ class DatabaseManager:
                     "author_id": row[2],
                     "status": row[3],
                     "created_at": row[4],
+                    "image_url": row[5],
                     "guild_id": guild_id,
                 }
 
@@ -346,13 +369,26 @@ class DatabaseManager:
                     return {"message_id": row[0], "confession_num": row[1]}
                 return None
 
-    async def set_guild_avatar(self, guild_id: int, avatar_url: str):
+    async def set_guild_customization(
+        self,
+        guild_id: int,
+        bot_nick: Optional[str] = None,
+        avatar_url: Optional[str] = None,
+        banner_url: Optional[str] = None,
+        bot_bio: Optional[str] = None,
+    ):
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("""
-                INSERT INTO guild_settings (guild_id, avatar_url)
-                VALUES (?, ?)
+                INSERT INTO guild_settings (guild_id, bot_nick, avatar_url, banner_url, bot_bio)
+                VALUES (?, ?, ?, ?, ?)
                 ON CONFLICT(guild_id) DO UPDATE SET
+                    bot_nick = excluded.bot_nick,
                     avatar_url = excluded.avatar_url,
+                    banner_url = excluded.banner_url,
+                    bot_bio = excluded.bot_bio,
                     updated_at = CURRENT_TIMESTAMP
-            """, (guild_id, avatar_url))
+            """, (guild_id, bot_nick, avatar_url, banner_url, bot_bio))
             await db.commit()
+
+    async def set_guild_avatar(self, guild_id: int, avatar_url: str):
+        await self.set_guild_customization(guild_id, avatar_url=avatar_url)

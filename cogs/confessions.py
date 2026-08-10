@@ -2,7 +2,7 @@ import logging
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ui import LayoutView, Container, TextDisplay, Separator, Button, Modal, TextInput
+from discord.ui import LayoutView, Container, TextDisplay, Separator, Button, Modal, TextInput, Label, FileUpload
 
 from config import Config
 from emojis import APPROVE, DENY, WARN, APPROVE_EMOJI, DENY_EMOJI, TICKET
@@ -23,6 +23,17 @@ async def _report_error(
         await handle_interaction_error(bot, interaction, error, command_used)
     else:
         schedule_error_report(bot, error, interaction, command_used)
+
+
+def build_confession_embed(confession_num: int, content: str, image_url: str | None = None) -> discord.Embed:
+    embed = discord.Embed(
+        description=content,
+        color=discord.Color.blurple(),
+    )
+    embed.set_title(f"Anonymous Confession #{confession_num}")
+    if image_url:
+        embed.set_image(url=image_url)
+    return embed
 
 
 class ReportModal(Modal, title="Report Confession"):
@@ -405,11 +416,16 @@ class ConfessionButtonsView(discord.ui.View):
 
 
 class ReviewActionView(LayoutView):
-    def __init__(self, bot, confession_num: int, content_text: str):
+    def __init__(self, bot, confession_num: int, content_text: str, image_url: str | None = None):
         super().__init__(timeout=None)
         self.bot = bot
         self.confession_num = confession_num
         self.content_text = content_text
+        self.image_url = image_url
+
+        display_text = content_text
+        if image_url:
+            display_text += "\n\n-# An image will be shown below the confession when approved."
 
         self.approve_btn = Button(
             label="Approve",
@@ -437,7 +453,7 @@ class ReviewActionView(LayoutView):
                 "-# Click Approve to post to confession channels or Reject to discard."
             ),
             Separator(),
-            TextDisplay(content_text),
+            TextDisplay(display_text),
             button_row,
         )
         self.add_item(container)
@@ -458,11 +474,9 @@ class ReviewActionView(LayoutView):
                 await interaction.response.send_message(view=err_view, ephemeral=True)
                 return
 
-            embed = discord.Embed(
-                description=self.content_text,
-                color=discord.Color.blurple(),
+            embed = build_confession_embed(
+                self.confession_num, self.content_text, self.image_url
             )
-            embed.set_title(f"Anonymous Confession #{self.confession_num}")
 
             buttons_view = ConfessionButtonsView(self.bot, self.confession_num)
 
@@ -526,13 +540,26 @@ class ReviewActionView(LayoutView):
 
 
 class ConfessionModal(Modal, title="Submit Anonymous Confession"):
-    confession_input = TextInput(
-        label="Your Secret Confession",
-        style=discord.TextStyle.paragraph,
-        placeholder="Type your confession here...",
-        required=True,
-        min_length=5,
-        max_length=2000,
+    confession_label = Label(
+        text="Your Secret Confession",
+        component=TextInput(
+            custom_id="confession_text",
+            style=discord.TextStyle.paragraph,
+            placeholder="Type your confession here...",
+            required=True,
+            min_length=5,
+            max_length=2000,
+        ),
+    )
+    image_label = Label(
+        text="Confession image (optional)",
+        description="Upload an image to show below your confession",
+        component=FileUpload(
+            custom_id="confession_image",
+            required=False,
+            min_values=0,
+            max_values=1,
+        ),
     )
 
     def __init__(self, bot):
@@ -569,7 +596,11 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
             await interaction.response.send_message(view=err_view, ephemeral=True)
             return
 
-        confession_text = self.confession_input.value
+        confession_text = self.confession_label.component.value
+        image_url = None
+        image_files = self.image_label.component.values
+        if image_files:
+            image_url = image_files[0].url
 
         for word in filter_words:
             if word.lower() in confession_text.lower():
@@ -593,6 +624,7 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
             confession_text,
             author_id,
             status="pending" if review_channel_id else "posted",
+            image_url=image_url,
         )
 
         if review_channel_id:
@@ -604,7 +636,9 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
                     review_channel = None
 
             if review_channel:
-                review_view = ReviewActionView(self.bot, confession_num, confession_text)
+                review_view = ReviewActionView(
+                    self.bot, confession_num, confession_text, image_url=image_url
+                )
                 await review_channel.send(view=review_view)
 
                 resp_view = LayoutView()
@@ -619,11 +653,7 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
                 await interaction.response.send_message(view=resp_view, ephemeral=True)
                 return
 
-        embed = discord.Embed(
-            description=confession_text,
-            color=discord.Color.blurple(),
-        )
-        embed.set_title(f"Anonymous Confession #{confession_num}")
+        embed = build_confession_embed(confession_num, confession_text, image_url)
 
         buttons_view = ConfessionButtonsView(self.bot, confession_num)
 
