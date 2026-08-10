@@ -314,9 +314,9 @@ class ReplyReviewActionView(LayoutView):
             )
 
             rev_container = Container(
-                TextDisplay(f"# {APPROVE} Approved Reply #{self.reply_num}\n\n{self.content_text}"),
+                TextDisplay(f"## {APPROVE} Approved Reply #{self.reply_num}\n\nApproved by {interaction.user.mention}"),
                 Separator(),
-                TextDisplay(f"Approved by {interaction.user.mention}"),
+                TextDisplay(f"{self.content_text}"),
             )
             rev_view = LayoutView()
             rev_view.add_item(rev_container)
@@ -334,9 +334,9 @@ class ReplyReviewActionView(LayoutView):
                 self.guild_id, self.confession_num, self.reply_num, "rejected"
             )
             rev_container = Container(
-                TextDisplay(f"# {DENY} Rejected Reply #{self.reply_num}\n\n{self.content_text}"),
+                TextDisplay(f"## {DENY} Rejected Reply #{self.reply_num}\n\nRejected by {interaction.user.mention}"),
                 Separator(),
-                TextDisplay(f"Rejected by {interaction.user.mention}"),
+                TextDisplay(f"{self.content_text}"),
             )
             rev_view = LayoutView()
             rev_view.add_item(rev_container)
@@ -432,7 +432,7 @@ class ReviewActionView(LayoutView):
         button_row.add_item(self.reject_btn)
 
         container = Container(
-            TextDisplay(f"# {TICKET} Review Pending Confession #{confession_num}\n\n-# Click Approve to post to confession channels or Reject to discard."),
+            TextDisplay(f"## {TICKET} Review Pending Confession #{confession_num}\n\n-# Click Approve to post to confession channels or Reject to discard."),
             Separator(),
             TextDisplay("{content_text}"),
             button_row,
@@ -491,9 +491,9 @@ class ReviewActionView(LayoutView):
             await self.bot.db.update_confession_status(guild_id, self.confession_num, "approved")
 
             rev_container = Container(
-                TextDisplay(f"# {APPROVE} Approved Confession #{self.confession_num}\n\n{self.content_text}"),
+                TextDisplay(f"## {APPROVE} Approved Confession #{self.confession_num}\n\nApproved by {interaction.user.mention}"),
                 Separator(),
-                TextDisplay(f"Approved by {interaction.user.mention}"),
+                TextDisplay(f"{self.content_text}"),
             )
             rev_view = LayoutView()
             rev_view.add_item(rev_container)
@@ -511,9 +511,9 @@ class ReviewActionView(LayoutView):
                 interaction.guild_id, self.confession_num, "rejected"
             )
             rev_container = Container(
-                TextDisplay(f"# {DENY} Rejected Confession #{self.confession_num}\n\n{self.content_text}"),
+                TextDisplay(f"## {DENY} Rejected Confession #{self.confession_num}\n\nRejected by {interaction.user.mention}"),
                 Separator(),
-                TextDisplay(f"Rejected by {interaction.user.mention}"),
+                TextDisplay(f"{self.content_text}"),
             )
             rev_view = LayoutView()
             rev_view.add_item(rev_container)
