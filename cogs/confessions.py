@@ -52,6 +52,7 @@ def build_confession_container(
         gallery.add_item(media=image_url)
         children.append(gallery)
     if button_row is not None:
+        children.append(Separator())
         children.append(button_row)
     return Container(*children)
 
