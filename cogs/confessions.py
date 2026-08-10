@@ -2,7 +2,19 @@ import logging
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ui import LayoutView, Container, TextDisplay, Separator, Button, Modal, TextInput, Label, FileUpload
+from discord.ui import (
+    LayoutView,
+    Container,
+    TextDisplay,
+    Separator,
+    Button,
+    Modal,
+    TextInput,
+    Label,
+    FileUpload,
+    MediaGallery,
+    ActionRow,
+)
 
 from config import Config
 from emojis import APPROVE, DENY, WARN, APPROVE_EMOJI, DENY_EMOJI, TICKET
@@ -25,15 +37,114 @@ async def _report_error(
         schedule_error_report(bot, error, interaction, command_used)
 
 
-def build_confession_embed(confession_num: int, content: str, image_url: str | None = None) -> discord.Embed:
-    embed = discord.Embed(
-        title=f"Anonymous Confession #{confession_num}",
-        description=content,
-        color=discord.Color.blurple(),
-    )
+def build_confession_container(
+    confession_num: int,
+    content: str,
+    image_url: str | None = None,
+    button_row: ActionRow | None = None,
+) -> Container:
+    """Build a container v2 confession block: title, separator, text, optional image."""
+    children: list = [
+        TextDisplay(f"### Anonymous Confession #{confession_num}"),
+        Separator(),
+        TextDisplay(content),
+    ]
     if image_url:
-        embed.set_image(url=image_url)
-    return embed
+        gallery = MediaGallery()
+        gallery.add_item(media=image_url)
+        children.append(gallery)
+    if button_row is not None:
+        children.append(button_row)
+    return Container(*children)
+
+
+async def strip_confession_buttons(bot, guild_id: int, channel, last_msg: dict):
+    """Remove action buttons from the previous confession message while keeping its content."""
+    try:
+        old_message = await channel.fetch_message(last_msg["message_id"])
+        record = await bot.db.get_confession(guild_id, last_msg["confession_num"])
+        if record:
+            view = ConfessionMessageView(
+                bot,
+                record["confession_num"],
+                record["content"],
+                record.get("image_url"),
+                with_buttons=False,
+            )
+            await old_message.edit(view=view)
+        else:
+            await old_message.edit(view=None)
+    except Exception as e:
+        logger.error(f"Could not remove buttons from old message: {e}")
+
+
+class ConfessionMessageView(LayoutView):
+    def __init__(
+        self,
+        bot,
+        confession_num: int,
+        content: str,
+        image_url: str | None = None,
+        with_buttons: bool = True,
+    ):
+        super().__init__(timeout=None)
+        self.bot = bot
+        self.confession_num = confession_num
+
+        button_row = None
+        if with_buttons:
+            confess_btn = Button(
+                label="Confess",
+                style=discord.ButtonStyle.grey,
+                custom_id=f"confess_btn_{confession_num}",
+            )
+            confess_btn.callback = self.confess_callback
+
+            reply_btn = Button(
+                label="Reply",
+                style=discord.ButtonStyle.grey,
+                custom_id=f"reply_btn_{confession_num}",
+            )
+            reply_btn.callback = self.reply_callback
+
+            report_btn = Button(
+                label="Report",
+                style=discord.ButtonStyle.grey,
+                custom_id=f"report_btn_{confession_num}",
+            )
+            report_btn.callback = self.report_callback
+
+            button_row = ActionRow(confess_btn, reply_btn, report_btn)
+
+        self.add_item(
+            build_confession_container(confession_num, content, image_url, button_row)
+        )
+
+    async def confess_callback(self, interaction: discord.Interaction):
+        modal = ConfessionModal(self.bot)
+        await interaction.response.send_modal(modal)
+
+    async def reply_callback(self, interaction: discord.Interaction):
+        try:
+            message = interaction.message
+            modal = ReplyModal(self.bot, message, self.confession_num)
+            await interaction.response.send_modal(modal)
+        except Exception as e:
+            await _report_error(self.bot, e, interaction, "reply_button")
+            err_view = LayoutView()
+            err_view.add_item(Container(TextDisplay(f"{DENY} Could not open reply form: {e}")))
+            await interaction.response.send_message(view=err_view, ephemeral=True)
+
+    async def report_callback(self, interaction: discord.Interaction):
+        try:
+            modal = ReportModal(self.bot, self.confession_num)
+            await interaction.response.send_modal(modal)
+        except Exception as e:
+            await _report_error(self.bot, e, interaction, "report_button")
+            err_view = LayoutView()
+            err_view.add_item(Container(TextDisplay(f"{DENY} Could not open report form: {e}")))
+            if not interaction.response.is_done():
+                await interaction.response.send_message(view=err_view, ephemeral=True)
 
 
 class ReportModal(Modal, title="Report Confession"):
@@ -356,65 +467,6 @@ class ReplyReviewActionView(LayoutView):
             await _report_error(self.bot, e, interaction, "reply_reject")
 
 
-class ConfessionButtonsView(discord.ui.View):
-    def __init__(self, bot, confession_num: int, message=None):
-        super().__init__(timeout=None)
-        self.bot = bot
-        self.confession_num = confession_num
-        self.message = message
-
-        confess_btn = discord.ui.Button(
-            label="Confess",
-            style=discord.ButtonStyle.grey,
-            custom_id=f"confess_btn_{confession_num}",
-        )
-        confess_btn.callback = self.confess_callback
-
-        reply_btn = discord.ui.Button(
-            label="Reply",
-            style=discord.ButtonStyle.grey,
-            custom_id=f"reply_btn_{confession_num}",
-        )
-        reply_btn.callback = self.reply_callback
-
-        report_btn = discord.ui.Button(
-            label="Report",
-            style=discord.ButtonStyle.grey,
-            custom_id=f"report_btn_{confession_num}",
-        )
-        report_btn.callback = self.report_callback
-
-        self.add_item(confess_btn)
-        self.add_item(reply_btn)
-        self.add_item(report_btn)
-
-    async def confess_callback(self, interaction: discord.Interaction):
-        modal = ConfessionModal(self.bot)
-        await interaction.response.send_modal(modal)
-
-    async def reply_callback(self, interaction: discord.Interaction):
-        try:
-            message = interaction.message
-            modal = ReplyModal(self.bot, message, self.confession_num)
-            await interaction.response.send_modal(modal)
-        except Exception as e:
-            await _report_error(self.bot, e, interaction, "reply_button")
-            err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay(f"{DENY} Could not open reply form: {e}")))
-            await interaction.response.send_message(view=err_view, ephemeral=True)
-
-    async def report_callback(self, interaction: discord.Interaction):
-        try:
-            modal = ReportModal(self.bot, self.confession_num)
-            await interaction.response.send_modal(modal)
-        except Exception as e:
-            await _report_error(self.bot, e, interaction, "report_button")
-            err_view = LayoutView()
-            err_view.add_item(Container(TextDisplay(f"{DENY} Could not open report form: {e}")))
-            if not interaction.response.is_done():
-                await interaction.response.send_message(view=err_view, ephemeral=True)
-
-
 class ReviewActionView(LayoutView):
     def __init__(self, bot, confession_num: int, content_text: str, image_url: str | None = None):
         super().__init__(timeout=None)
@@ -422,10 +474,6 @@ class ReviewActionView(LayoutView):
         self.confession_num = confession_num
         self.content_text = content_text
         self.image_url = image_url
-
-        display_text = content_text
-        if image_url:
-            display_text += "\n\n-# An image will be shown below the confession when approved."
 
         self.approve_btn = Button(
             label="Approve",
@@ -443,20 +491,23 @@ class ReviewActionView(LayoutView):
         )
         self.reject_btn.callback = self.reject_callback
 
-        button_row = discord.ui.ActionRow()
-        button_row.add_item(self.approve_btn)
-        button_row.add_item(self.reject_btn)
+        button_row = ActionRow(self.approve_btn, self.reject_btn)
 
-        container = Container(
+        container_children: list = [
             TextDisplay(
                 f"## {TICKET} Review Pending Confession #{confession_num}\n\n"
                 "-# Click Approve to post to confession channels or Reject to discard."
             ),
             Separator(),
-            TextDisplay(display_text),
-            button_row,
-        )
-        self.add_item(container)
+            TextDisplay(content_text),
+        ]
+        if image_url:
+            gallery = MediaGallery()
+            gallery.add_item(media=image_url)
+            container_children.append(gallery)
+        container_children.append(button_row)
+
+        self.add_item(Container(*container_children))
 
     async def approve_callback(self, interaction: discord.Interaction):
         try:
@@ -474,12 +525,6 @@ class ReviewActionView(LayoutView):
                 await interaction.response.send_message(view=err_view, ephemeral=True)
                 return
 
-            embed = build_confession_embed(
-                self.confession_num, self.content_text, self.image_url
-            )
-
-            buttons_view = ConfessionButtonsView(self.bot, self.confession_num)
-
             for ch_id in confession_channels:
                 channel = interaction.guild.get_channel(ch_id)
                 if not channel:
@@ -492,13 +537,16 @@ class ReviewActionView(LayoutView):
                     try:
                         last_msg = await self.bot.db.get_latest_confession_message(guild_id, ch_id)
                         if last_msg:
-                            try:
-                                old_message = await channel.fetch_message(last_msg["message_id"])
-                                await old_message.edit(view=None)
-                            except Exception as e:
-                                logger.error(f"Could not remove buttons from old message: {e}")
+                            await strip_confession_buttons(self.bot, guild_id, channel, last_msg)
 
-                        new_msg = await channel.send(embed=embed, view=buttons_view)
+                        new_msg = await channel.send(
+                            view=ConfessionMessageView(
+                                self.bot,
+                                self.confession_num,
+                                self.content_text,
+                                self.image_url,
+                            )
+                        )
                         await self.bot.db.track_confession_message(
                             guild_id, ch_id, new_msg.id, self.confession_num
                         )
@@ -655,10 +703,6 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
                 await interaction.followup.send(view=resp_view, ephemeral=True)
                 return
 
-        embed = build_confession_embed(confession_num, confession_text, image_url)
-
-        buttons_view = ConfessionButtonsView(self.bot, confession_num)
-
         for ch_id in confession_channels:
             channel = interaction.guild.get_channel(ch_id)
             if not channel:
@@ -671,13 +715,13 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
                 try:
                     last_msg = await self.bot.db.get_latest_confession_message(guild_id, ch_id)
                     if last_msg:
-                        try:
-                            old_message = await channel.fetch_message(last_msg["message_id"])
-                            await old_message.edit(view=None)
-                        except Exception as e:
-                            logger.error(f"Could not remove buttons from old message: {e}")
+                        await strip_confession_buttons(self.bot, guild_id, channel, last_msg)
 
-                    new_msg = await channel.send(embed=embed, view=buttons_view)
+                    new_msg = await channel.send(
+                        view=ConfessionMessageView(
+                            self.bot, confession_num, confession_text, image_url
+                        )
+                    )
                     await self.bot.db.track_confession_message(
                         guild_id, ch_id, new_msg.id, confession_num
                     )
