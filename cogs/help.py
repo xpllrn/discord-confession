@@ -44,7 +44,7 @@ class HelpCog(commands.Cog, name="Help"):
 
         try:
             container = Container(
-                TextDisplay("# Anonymous Confession Bot"),
+                TextDisplay("## Anonymous Confession Bot"),
                 Separator(),
                 TextDisplay(commands_text),
                 Separator(),

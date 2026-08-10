@@ -37,7 +37,7 @@ class ReviewChannelSelectView(LayoutView):
         )
 
         container = Container(
-            TextDisplay("# 📜 Review Channel\n\nChannels configured! Next, would you like to review confessions before they are posted?"),
+            TextDisplay("## 📜 Review Channel\n\nChannels configured! Next, would you like to review confessions before they are posted?"),
             Separator(),
             section,
             select_row
@@ -82,7 +82,7 @@ class CompletionView(LayoutView):
         )
 
         container = Container(
-            TextDisplay("# 🏁 You're done!\nSetup complete! You can now use `/confess` to submit confessions. If you need to make changes, you can use `/panel` to adjust settings at any time."),
+            TextDisplay("## 🏁 You're done!\nSetup complete! You can now use `/confess` to submit confessions. If you need to make changes, you can use `/panel` to adjust settings at any time."),
             Separator(),
             section
         )
@@ -105,7 +105,7 @@ class ConfessionChannelsSelectView(LayoutView):
         select_row.add_item(self.select_menu)
 
         container = Container(
-            TextDisplay("# 🕵️ Confessions channel\n\nThis process will walk you through setting up the Confession bot. Let's get started!"),
+            TextDisplay("## 🕵️ Confessions channel\n\nThis process will walk you through setting up the Confession bot. Let's get started!"),
             Separator(),
             TextDisplay("First, please select the channels you'd like to use for confessions."),
             select_row

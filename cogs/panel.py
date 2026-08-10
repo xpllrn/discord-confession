@@ -63,6 +63,8 @@ class CustomizeBotModal(Modal, title="Customize Confession Bot"):
         self.bot = bot
 
     async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+
         guild = interaction.guild
         guild_id = interaction.guild_id
         settings = await self.bot.db.get_guild_settings(guild_id)
@@ -87,16 +89,13 @@ class CustomizeBotModal(Modal, title="Customize Confession Bot"):
                 await guild.me.edit(**edit_kwargs)
 
             avatar_url = settings.get("avatar_url")
-            if avatar_files:
-                avatar_url = avatar_files[0].url
-            elif edit_kwargs.get("avatar"):
+            if edit_kwargs.get("avatar") or avatar_files:
                 avatar_url = guild.me.display_avatar.url
 
             banner_url = settings.get("banner_url")
-            if banner_files:
-                banner_url = banner_files[0].url
-            elif edit_kwargs.get("banner") and guild.me.banner:
-                banner_url = guild.me.banner.url
+            if edit_kwargs.get("banner") or banner_files:
+                if guild.me.banner:
+                    banner_url = guild.me.banner.url
 
             bot_nick = nick_input or settings.get("bot_nick")
             bot_bio = bio_input or settings.get("bot_bio")
@@ -113,20 +112,20 @@ class CustomizeBotModal(Modal, title="Customize Confession Bot"):
             resp_view = LayoutView()
             resp_view.add_item(Container(
                 TextDisplay(
-                    f"# {APPROVE} Bot Customized\n\n"
+                    f"## {APPROVE} Bot Customized\n\n"
                     "Your confession bot profile has been updated for this server."
                 ),
             ))
-            await interaction.response.send_message(view=resp_view, ephemeral=True)
+            await interaction.followup.send(view=resp_view, ephemeral=True)
         except Exception as e:
             err_view = LayoutView()
             err_view.add_item(Container(
                 TextDisplay(
-                    f"# {DENY} Failed to Update Bot\n\n{str(e)}\n\n"
+                    f"## {DENY} Failed to Update Bot\n\n{str(e)}\n\n"
                     "Make sure uploaded files are valid images and the bot has permission to change its profile."
                 ),
             ))
-            await interaction.response.send_message(view=err_view, ephemeral=True)
+            await interaction.followup.send(view=err_view, ephemeral=True)
 
 
 class AddWordModal(Modal, title="Add Blocked Words"):
@@ -220,7 +219,7 @@ async def send_filter_words_panel(interaction: discord.Interaction, bot, filter_
     button_row.add_item(clear_btn)
 
     container = Container(
-        TextDisplay(f"# {WARN} Filter Words Management"),
+        TextDisplay(f"## {WARN} Filter Words Management"),
         Separator(),
         TextDisplay(f"{words_text}\n\nUse the buttons below to add or remove words from the filter list."),
         button_row,
@@ -275,7 +274,7 @@ class PanelView(LayoutView):
         select_row.add_item(select_menu)
 
         container = Container(
-            TextDisplay(f"# {WRENCH} Customize your confession bot!"),
+            TextDisplay(f"## {WRENCH} Customize your confession bot!"),
             Separator(),
             TextDisplay("Use the options below to customize the bot according to your server preferences."),
             select_row,

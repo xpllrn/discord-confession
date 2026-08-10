@@ -27,10 +27,10 @@ async def _report_error(
 
 def build_confession_embed(confession_num: int, content: str, image_url: str | None = None) -> discord.Embed:
     embed = discord.Embed(
+        title=f"Anonymous Confession #{confession_num}",
         description=content,
         color=discord.Color.blurple(),
     )
-    embed.set_title(f"Anonymous Confession #{confession_num}")
     if image_url:
         embed.set_image(url=image_url)
     return embed
@@ -86,7 +86,7 @@ class ReportModal(Modal, title="Report Confession"):
 
             ok_view = LayoutView()
             ok_view.add_item(Container(
-                TextDisplay(f"# {APPROVE} Report Submitted"),
+                TextDisplay(f"## {APPROVE} Report Submitted"),
                 Separator(),
                 TextDisplay("Thanks — your report has been sent to the bot staff for review."),
             ))
@@ -141,7 +141,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
             if word.lower() in confession_text.lower():
                 err_view = LayoutView()
                 err_view.add_item(Container(
-                    TextDisplay(f"# {WARN} Blocked Content"),
+                    TextDisplay(f"## {WARN} Blocked Content"),
                     Separator(),
                     TextDisplay("Your confession contains prohibited words configured by the server administration."),
                 ))
@@ -176,7 +176,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
 
                     resp_view = LayoutView()
                     resp_view.add_item(Container(
-                        TextDisplay(f"# {WARN} Reply Sent for Review"),
+                        TextDisplay(f"## {WARN} Reply Sent for Review"),
                         Separator(),
                         TextDisplay(
                             "Your anonymous reply has been submitted for moderator review. "
@@ -193,10 +193,10 @@ class ReplyModal(Modal, title="Reply to Confession"):
             existing_thread = await self._get_or_create_thread()
 
             reply_embed = discord.Embed(
+                title=f"🕵️ Anonymous Reply #{reply_num}",
                 description=confession_text,
                 color=discord.Color.blurple(),
             )
-            reply_embed.set_title(f"🕵️ Anonymous Reply #{reply_num}")
 
             thread_view = discord.ui.View(timeout=None)
             confess_btn = discord.ui.Button(
@@ -216,7 +216,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
 
             resp_view = LayoutView()
             resp_view.add_item(Container(
-                TextDisplay(f"# {APPROVE} Reply Posted"),
+                TextDisplay(f"## {APPROVE} Reply Posted"),
                 Separator(),
                 TextDisplay("Your anonymous reply has been posted in the thread!"),
             ))
@@ -226,7 +226,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
             await _report_error(self.bot, e, interaction, "reply")
             err_view = LayoutView()
             err_view.add_item(Container(
-                TextDisplay(f"# {DENY} Submission Error"),
+                TextDisplay(f"## {DENY} Submission Error"),
                 Separator(),
                 TextDisplay(f"An error occurred: {e}"),
             ))
@@ -275,7 +275,7 @@ class ReplyReviewActionView(LayoutView):
         button_row.add_item(self.reject_btn)
 
         container = Container(
-            TextDisplay(f"# {TICKET} Review Pending Reply #{reply_num}\n\n{content_text}"),
+            TextDisplay(f"## {TICKET} Review Pending Reply #{reply_num}\n\n{content_text}"),
             Separator(),
             TextDisplay(f"For confession **#{confession_num}**. Click Approve to post to thread or Reject to discard."),
         )
@@ -300,10 +300,10 @@ class ReplyReviewActionView(LayoutView):
             thread = await self._get_or_create_thread()
 
             reply_embed = discord.Embed(
+                title=f"🕵️ Anonymous Reply #{self.reply_num}",
                 description=self.content_text,
                 color=discord.Color.blurple(),
             )
-            reply_embed.set_title(f"🕵️ Anonymous Reply #{self.reply_num}")
 
             thread_view = discord.ui.View(timeout=None)
             confess_btn = discord.ui.Button(
@@ -586,7 +586,7 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
         if not confession_channels:
             err_view = LayoutView()
             err_view.add_item(Container(
-                TextDisplay(f"# {WARN} Bot Not Configured"),
+                TextDisplay(f"## {WARN} Bot Not Configured"),
                 Separator(),
                 TextDisplay(
                     "This server has not configured confession channels yet. "
@@ -606,7 +606,7 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
             if word.lower() in confession_text.lower():
                 err_view = LayoutView()
                 err_view.add_item(Container(
-                    TextDisplay(f"# {WARN} Blocked Content"),
+                    TextDisplay(f"## {WARN} Blocked Content"),
                     Separator(),
                     TextDisplay(
                         "Your confession contains prohibited words configured by the server administration."
@@ -614,6 +614,8 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
                 ))
                 await interaction.response.send_message(view=err_view, ephemeral=True)
                 return
+
+        await interaction.response.defer(ephemeral=True)
 
         confession_num = await self.bot.db.increment_confession_count(guild_id)
         author_id = interaction.user.id
@@ -643,14 +645,14 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
 
                 resp_view = LayoutView()
                 resp_view.add_item(Container(
-                    TextDisplay(f"# {WARN} Sent for Review"),
+                    TextDisplay(f"## {WARN} Sent for Review"),
                     Separator(),
                     TextDisplay(
                         f"Your anonymous confession **#{confession_num}** has been submitted "
                         "for moderator review. It will appear once approved!"
                     ),
                 ))
-                await interaction.response.send_message(view=resp_view, ephemeral=True)
+                await interaction.followup.send(view=resp_view, ephemeral=True)
                 return
 
         embed = build_confession_embed(confession_num, confession_text, image_url)
@@ -684,13 +686,13 @@ class ConfessionModal(Modal, title="Submit Anonymous Confession"):
 
         resp_view = LayoutView()
         resp_view.add_item(Container(
-            TextDisplay(f"# {APPROVE} Confession Posted"),
+            TextDisplay(f"## {APPROVE} Confession Posted"),
             Separator(),
             TextDisplay(
                 f"Your anonymous confession **#{confession_num}** has been successfully published!"
             ),
         ))
-        await interaction.response.send_message(view=resp_view, ephemeral=True)
+        await interaction.followup.send(view=resp_view, ephemeral=True)
 
     async def on_error(self, interaction: discord.Interaction, error: Exception):
         await handle_interaction_error(self.bot, interaction, error, "confess")

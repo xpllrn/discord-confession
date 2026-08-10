@@ -73,7 +73,7 @@ class OwnerCog(commands.Cog, name="Owner"):
 
             view = LayoutView()
             view.add_item(Container(
-                TextDisplay(f"# 🔍 Reply Lookup"),
+                TextDisplay(f"## 🔍 Reply Lookup"),
                 Separator(),
                 TextDisplay(
                     f"**Guild ID:** `{gid}`\n"
@@ -110,7 +110,7 @@ class OwnerCog(commands.Cog, name="Owner"):
 
         view = LayoutView()
         view.add_item(Container(
-            TextDisplay("# 🔍 Confession Lookup"),
+            TextDisplay("## 🔍 Confession Lookup"),
             Separator(),
             TextDisplay(
                 f"**Guild ID:** `{gid}`\n"
