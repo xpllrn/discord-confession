@@ -7,7 +7,7 @@ from discord.ui import LayoutView, Container, TextDisplay, Separator, Button, Mo
 from config import Config
 from emojis import APPROVE, DENY, WARN, APPROVE_EMOJI, DENY_EMOJI, TICKET
 from logutil import send_report_log
-from ui_helpers import schedule_error_report, handle_interaction_error
+from ui_helpers import schedule_error_report, handle_interaction_error, is_unknown_interaction
 
 logger = logging.getLogger(__name__)
 
@@ -432,9 +432,9 @@ class ReviewActionView(LayoutView):
         button_row.add_item(self.reject_btn)
 
         container = Container(
-            TextDisplay(f"# {TICKET} Review Pending Confession #{confession_num}\n\n{content_text}"),
+            TextDisplay(f"# {TICKET} Review Pending Confession #{confession_num}\n\n-# Click Approve to post to confession channels or Reject to discard."),
             Separator(),
-            TextDisplay("Click Approve to post to confession channels or Reject to discard."),
+            TextDisplay("{content_text}"),
             button_row,
         )
         self.add_item(container)
@@ -669,10 +669,33 @@ class ConfessionsCog(commands.Cog, name="Confessions"):
 
     @app_commands.command(name="confess", description="Submit an anonymous confession to the server")
     async def confess(self, interaction: discord.Interaction):
+        if not self.bot.is_ready():
+            try:
+                if not interaction.response.is_done():
+                    await interaction.response.send_message(
+                        "Bot is still starting — wait a moment and try again.",
+                        ephemeral=True,
+                    )
+            except discord.HTTPException:
+                pass
+            return
+
         try:
-            modal = ConfessionModal(self.bot)
-            await interaction.response.send_modal(modal)
+            await interaction.response.send_modal(ConfessionModal(self.bot))
+        except discord.NotFound as e:
+            if is_unknown_interaction(e):
+                logger.warning(
+                    "Confess interaction expired (10062) — bot may have been restarting "
+                    "or the connection was slow. Ask the user to run /confess again."
+                )
+                schedule_error_report(self.bot, e, interaction, "confess")
+                return
+            raise
         except Exception as e:
+            if is_unknown_interaction(e):
+                logger.warning("Confess failed with expired interaction (10062)")
+                schedule_error_report(self.bot, e, interaction, "confess")
+                return
             await _report_error(self.bot, e, interaction, "confess", notify_user=True)
 
 

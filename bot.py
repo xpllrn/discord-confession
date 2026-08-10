@@ -7,7 +7,7 @@ from discord.ext import commands
 from config import Config
 from database import DatabaseManager
 from cache import CacheManager
-from ui_helpers import handle_interaction_error, schedule_error_report
+from ui_helpers import handle_interaction_error, is_unknown_interaction
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,6 +27,7 @@ class ConfessionBot(commands.Bot):
         )
         self.db = DatabaseManager(Config.DATABASE_PATH)
         self.cache = CacheManager()
+        self._warmup_done = asyncio.Event()
 
     async def setup_hook(self):
         logger.info("Initializing Database and Redis Cache...")
@@ -54,6 +55,11 @@ class ConfessionBot(commands.Bot):
         async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
             original = getattr(error, "original", error)
             command_name = interaction.command.name if interaction.command else "unknown"
+            if is_unknown_interaction(original if isinstance(original, BaseException) else error):
+                logger.warning(
+                    f"Expired interaction for command '{command_name}' (10062) — not responding"
+                )
+                return
             await handle_interaction_error(
                 self,
                 interaction,
@@ -61,21 +67,43 @@ class ConfessionBot(commands.Bot):
                 command_name,
             )
 
-        logger.info("Syncing slash commands...")
+        if Config.SYNC_COMMANDS_ON_START:
+            logger.info("Syncing slash commands...")
+            try:
+                synced = await self.tree.sync()
+                logger.info(f"Synced {len(synced)} slash commands globally.")
+            except Exception as e:
+                logger.error(f"Failed to sync slash commands: {e}")
+        else:
+            logger.info("Skipping slash command sync (SYNC_COMMANDS_ON_START=0).")
+
+    async def on_connect(self):
+        """Warm the HTTP session before users can invoke commands."""
+        asyncio.create_task(self._warmup_http())
+
+    async def _warmup_http(self):
         try:
-            synced = await self.tree.sync()
-            logger.info(f"Synced {len(synced)} slash commands globally.")
+            await self.application_info()
+            logger.info("HTTP session warmed up.")
         except Exception as e:
-            logger.error(f"Failed to sync slash commands: {e}")
+            logger.warning(f"HTTP warmup failed: {e}")
+        finally:
+            self._warmup_done.set()
+
+    async def _set_presence(self):
+        try:
+            await self.change_presence(
+                activity=discord.Activity(
+                    type=discord.ActivityType.watching,
+                    name=Config.BOT_STATUS,
+                ),
+                status=discord.Status.online,
+            )
+        except Exception as e:
+            logger.warning(f"Failed to set presence: {e}")
 
     async def on_ready(self):
-        await self.change_presence(
-            activity=discord.Activity(
-                type=discord.ActivityType.watching,
-                name=Config.BOT_STATUS,
-            ),
-            status=discord.Status.online,
-        )
+        asyncio.create_task(self._set_presence())
         logger.info(f"Logged in as {self.user} (ID: {self.user.id})")
         logger.info(f"Status set to Watching {Config.BOT_STATUS}")
         logger.info("Bot is ready and active!")

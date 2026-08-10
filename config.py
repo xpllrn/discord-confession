@@ -32,3 +32,6 @@ class Config:
 
     # Shown as the bot's "Watching" status in Discord
     BOT_STATUS: str = os.getenv("BOT_STATUS", "confess.adore.rest")
+
+    # Set to 0 to skip global slash sync on every boot (commands already registered)
+    SYNC_COMMANDS_ON_START: bool = os.getenv("SYNC_COMMANDS_ON_START", "1") not in ("0", "false", "False")
