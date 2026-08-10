@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Status — Confession</title>
   <meta name="description" content="Live status for Confession.">
-  <meta name="theme-color" content="#9b7bd1">
+  <meta name="theme-color" content="#0a0910">
   <link rel="canonical" href="https://confess.adore.rest/status/">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://confess.adore.rest/status/">
@@ -26,24 +26,24 @@
 
   <header class="nav">
     <div class="shell nav-inner">
-      <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="38" height="38"><span>Confession</span></a>
+      <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="34" height="34"><span>Confession</span></a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
       <ul class="nav-links">
         <li><a href="/" class="">Home</a></li><li><a href="/commands/" class="">Commands</a></li><li><a href="/docs/" class="">Docs</a></li><li><a href="/status/" class="active">Status</a></li><li><a href="/support/" class="">Support</a></li>
-        <li><a class="btn btn-primary" href="/invite/" style="padding:0.55rem 0.95rem;color:#fff">Invite</a></li>
+        <li><a class="btn btn-primary" href="/invite/" style="padding:0.5rem 0.95rem;color:#120e0b">Invite</a></li>
       </ul>
     </div>
   </header>
 
-  <main class="shell" data-status-root data-origins='["https://api.confess.adore.rest", ""]'>
+  <main class="shell" data-status-root data-offline-name="Confession">
     <div class="page-hero">
       <span class="eyebrow">live</span>
       <h1>System status</h1>
-      <p>Pulled from the bot’s status API every 15 seconds. No placeholder uptime.</p>
+      <p>Live metrics. Updated every 15 seconds.</p>
     </div>
     <div class="status-banner is-loading" data-status-banner>
-      <div><span class="status-dot"></span><strong data-status-title>Checking systems…</strong></div>
-      <span data-status-updated style="color:var(--muted);font-size:0.88rem">—</span>
+      <div><span class="status-dot"></span><strong data-status-title>Checking…</strong></div>
+      <span data-status-updated style="color:var(--faint);font-size:0.85rem">—</span>
     </div>
     <div class="metrics">
       <div class="metric"><span>Latency</span><strong data-metric-latency>—</strong></div>
@@ -51,14 +51,14 @@
       <div class="metric"><span>Uptime</span><strong data-metric-uptime>—</strong></div>
     </div>
     <div class="svc-list" data-services></div>
-    <p style="color:var(--muted);font-size:0.9rem;margin:1.25rem 0 2.5rem">Need help? <a href="/support/" style="color:var(--accent-deep);font-weight:700">Join support</a>.</p>
+    <p style="color:var(--faint);font-size:0.9rem;margin:1.25rem 0 2.5rem">Need help? <a href="/support/" style="color:var(--accent);font-weight:700">Join support</a>.</p>
   </main>
 
   <footer class="footer">
     <div class="shell footer-grid">
       <div>
-        <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="34" height="34"><span>Confession</span></a>
-        <p style="color:var(--muted);margin:0.8rem 0 0;max-width:28rem">Anonymous confessions for Discord — soft, private, simple. Part of the adore.rest network.</p>
+        <a class="brand" href="/"><img src="/assets/cat.png" alt="" width="32" height="32"><span>Confession</span></a>
+        <p style="color:var(--muted);margin:0.85rem 0 0;max-width:28rem">Anonymous confessions for Discord. Part of the adore.rest network.</p>
       </div>
       <div>
         <h4>Explore</h4>

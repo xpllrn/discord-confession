@@ -11,6 +11,7 @@ if (toggle && links) {
 async function loadStatus() {
   const root = document.querySelector('[data-status-root]');
   if (!root) return;
+  const offlineName = root.getAttribute('data-offline-name') || 'the bot';
   const banner = root.querySelector('[data-status-banner]');
   const title = root.querySelector('[data-status-title]');
   const updated = root.querySelector('[data-status-updated]');
@@ -19,10 +20,7 @@ async function loadStatus() {
   const uptime = root.querySelector('[data-metric-uptime]');
   const services = root.querySelector('[data-services]');
 
-  const endpoints = [
-    '/api/status',
-    ...JSON.parse(root.getAttribute('data-origins') || '[]').filter(Boolean).map((o) => `${o.replace(/\/$/, '')}/api/status`),
-  ];
+  const endpoints = ['/api/status'];
 
   let data = null;
   for (const url of endpoints) {
@@ -40,19 +38,20 @@ async function loadStatus() {
 
   if (!data) {
     banner?.classList.add('is-bad');
-    banner?.classList.remove('is-loading');
-    if (title) title.textContent = 'Unable to reach the bot status API';
+    banner?.classList.remove('is-loading', 'is-ok');
+    if (title) title.textContent = `Can’t reach ${offlineName} right now`;
     if (latency) latency.textContent = '—';
     if (guilds) guilds.textContent = '—';
     if (uptime) uptime.textContent = '—';
     if (services) {
-      services.innerHTML = `<div class="svc"><div><strong>Status API</strong><small>Bot offline or STATUS_API_ORIGIN not configured</small></div><span class="pill is-bad">Unreachable</span></div>`;
+      services.innerHTML = `<div class="svc"><div><strong>Cluster</strong><small>Live metrics unavailable. Try again in a moment.</small></div><span class="pill is-bad">Offline</span></div>`;
     }
     return;
   }
 
   const ok = data.status === 'operational';
   banner?.classList.toggle('is-bad', !ok);
+  banner?.classList.toggle('is-ok', ok);
   banner?.classList.remove('is-loading');
   if (title) title.textContent = ok ? 'All systems operational' : 'Degraded performance';
   if (latency) latency.textContent = data.latency_ms != null ? `${data.latency_ms} ms` : '—';

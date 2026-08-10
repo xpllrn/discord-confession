@@ -5,7 +5,7 @@ export async function onRequestGet(context) {
   ].filter(Boolean);
   for (const origin of origins) {
     try {
-      const res = await fetch(origin.replace(/\/$/, "") + "/api/status", {
+      const res = await fetch(String(origin).replace(/\/$/, "") + "/api/status", {
         headers: { Accept: "application/json" },
         cf: { cacheTtl: 5 },
       });
@@ -29,7 +29,7 @@ export async function onRequestGet(context) {
     guilds: null,
     users: null,
     uptime_seconds: null,
-    services: [{ name: "Status API", status: "offline", details: "Upstream unreachable" }],
+    services: [{ name: "Cluster", status: "offline", details: "Live metrics unavailable" }],
     checked_at: Math.floor(Date.now() / 1000),
   }), {
     status: 503,

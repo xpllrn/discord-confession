@@ -121,8 +121,8 @@ class CustomizeBotModal(Modal, title="Customize Confession Bot"):
             err_view = LayoutView()
             err_view.add_item(Container(
                 TextDisplay(
-                    f"## {DENY} Failed to Update Bot\n\n{str(e)}\n\n"
-                    "Make sure uploaded files are valid images and the bot has permission to change its profile."
+                    f"## {DENY} Failed to Update Bot\n\n{str(e)}, "
+                    "make sure uploaded files are valid images and the bot has permission to change its profile."
                 ),
             ))
             await interaction.followup.send(view=err_view, ephemeral=True)
@@ -221,7 +221,7 @@ async def send_filter_words_panel(interaction: discord.Interaction, bot, filter_
     container = Container(
         TextDisplay(f"## {WARN} Filter Words Management"),
         Separator(),
-        TextDisplay(f"{words_text}\n\nUse the buttons below to add or remove words from the filter list."),
+        TextDisplay(f"{words_text}, use the buttons below to add or remove words from the filter list."),
         button_row,
     )
 

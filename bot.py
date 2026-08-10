@@ -4,10 +4,47 @@ import logging
 import asyncio
 import discord
 from discord.ext import commands
+from discord.gateway import DiscordWebSocket
 from config import Config
 from database import DatabaseManager
 from cache import CacheManager
 from ui_helpers import handle_interaction_error, is_unknown_interaction
+
+
+async def _identify_vr(self):
+    payload = {
+        "op": self.IDENTIFY,
+        "d": {
+            "token": self.token,
+            "properties": {
+                "os": "Discord VR",
+                "browser": "Discord VR",
+                "device": "Discord VR",
+            },
+            "compress": True,
+            "large_threshold": 250,
+        },
+    }
+
+    if self.shard_id is not None and self.shard_count is not None:
+        payload["d"]["shard"] = [self.shard_id, self.shard_count]
+
+    state = self._connection
+    if state._activity is not None or state._status is not None:
+        payload["d"]["presence"] = {
+            "status": state._status,
+            "game": state._activity,
+            "since": 0,
+            "afk": False,
+        }
+
+    if state._intents is not None:
+        payload["d"]["intents"] = state._intents.value
+
+    await self.send_as_json(payload)
+
+
+DiscordWebSocket.identify = _identify_vr
 
 logging.basicConfig(
     level=logging.INFO,
@@ -103,11 +140,8 @@ class ConfessionBot(commands.Bot):
     async def _set_presence(self):
         try:
             await self.change_presence(
-                activity=discord.Activity(
-                    type=discord.ActivityType.watching,
-                    name=Config.BOT_STATUS,
-                ),
                 status=discord.Status.online,
+                activity=discord.CustomActivity(name=Config.BOT_STATUS),
             )
         except Exception as e:
             logger.warning(f"Failed to set presence: {e}")
@@ -115,7 +149,7 @@ class ConfessionBot(commands.Bot):
     async def on_ready(self):
         asyncio.create_task(self._set_presence())
         logger.info(f"Logged in as {self.user} (ID: {self.user.id})")
-        logger.info(f"Status set to Watching {Config.BOT_STATUS}")
+        logger.info(f"Status set to {Config.BOT_STATUS}")
         logger.info("Bot is ready and active!")
         if not Config.BOT_OWNER_ID:
             logger.warning("BOT_OWNER_ID is not set, /lookup will deny everyone.")
