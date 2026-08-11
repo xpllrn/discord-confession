@@ -5,6 +5,7 @@ __pycache__/
 .env
 website/node_modules/
 website/dist/
+website/.astro/
 .DS_Store
 /public/
 node_modules/

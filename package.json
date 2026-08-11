@@ -1,7 +1,10 @@
 {
-  "name": "confession-website",
+  "name": "confession-site",
   "private": true,
+  "description": "Cloudflare Pages builds from ./website (same as adore). Set Root directory to website.",
   "scripts": {
-    "build": "npm --prefix website ci && npm --prefix website run build && rm -rf public && cp -R website/dist public"
+    "dev": "npm --prefix website run dev",
+    "build": "npm --prefix website ci && npm --prefix website run build",
+    "pages:deploy": "npm run build && npx wrangler pages deploy website/dist --project-name=confession"
   }
 }
