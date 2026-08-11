@@ -1,0 +1,32 @@
+[
+  {
+    "name": "/confess",
+    "description": "Submit an anonymous confession to the server.",
+    "category": "Everyone",
+    "permission": "Everyone"
+  },
+  {
+    "name": "/help",
+    "description": "Show bot info and available commands.",
+    "category": "Everyone",
+    "permission": "Everyone"
+  },
+  {
+    "name": "/ping",
+    "description": "Check if the bot is online and show latency.",
+    "category": "Everyone",
+    "permission": "Everyone"
+  },
+  {
+    "name": "/setup",
+    "description": "Walk through channels and confession configuration.",
+    "category": "Administrators",
+    "permission": "Administrators"
+  },
+  {
+    "name": "/panel",
+    "description": "Open the confession customization panel.",
+    "category": "Administrators",
+    "permission": "Administrators"
+  }
+]
