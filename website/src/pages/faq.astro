@@ -1,0 +1,12 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Faq from "../components/Faq.astro";
+import { faqJsonLd } from "../data/site";
+---
+<Layout
+  title="faq"
+  description="Frequently asked questions about adore, the multipurpose Discord bot for moderation, security, economy, leveling, and more."
+  structuredData={[faqJsonLd]}
+>
+  <Faq />
+</Layout>

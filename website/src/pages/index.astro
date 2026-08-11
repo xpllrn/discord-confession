@@ -1,0 +1,66 @@
+---
+import Layout from "../layouts/Layout.astro";
+import HeroBackdrop from "../components/HeroBackdrop.astro";
+import SectionDivider from "../components/SectionDivider.astro";
+import Button from "../components/Button.astro";
+import HomeSections from "../components/HomeSections.astro";
+import ServerMarquee from "../components/ServerMarquee.astro";
+import { site } from "../data/site";
+---
+<Layout
+  title={site.shareTitle}
+  description={site.shareDescription}
+  image={site.shareImage}
+  heroOverlay
+>
+  <section class="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-5 pt-24">
+    <HeroBackdrop />
+
+    <div class="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center sm:px-8">
+      <h1 class="text-4xl font-semibold tracking-tight text-[var(--color-fg)] sm:text-6xl sm:leading-[1.12]">
+        <span class="block">
+          <span class="relative inline-block">
+            <span translate="no">{site.name}</span>
+            <svg
+              class="absolute -bottom-1 left-0 w-full text-white"
+              viewBox="0 0 80 8"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M2 5c14-3 28 2 40-1s26-2 38 1"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                opacity="0.85"
+              />
+            </svg>
+          </span>
+          {" "}is Discord&apos;s
+        </span>
+        <span class="mt-2 block sm:mt-3">
+          anonymous <span class="text-[var(--color-premium)]">confession</span> app
+        </span>
+      </h1>
+
+      <p class="mt-6 max-w-lg text-sm leading-relaxed text-[var(--color-dim)] sm:text-base">
+        Let members speak freely. Confessions stay anonymous, reviews stay optional, and setup takes one /setup walkthrough.
+      </p>
+
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+        <Button href={site.invite} variant="glossy" external>
+          Invite to Discord
+        </Button>
+        <Button href="/commands" variant="glossy">
+          Explore commands
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <ServerMarquee />
+
+  <SectionDivider />
+
+  <HomeSections />
+</Layout>

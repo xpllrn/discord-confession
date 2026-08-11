@@ -3,3 +3,8 @@ __pycache__/
 *.pyo
 data/
 .env
+website/node_modules/
+website/dist/
+.DS_Store
+/public/
+node_modules/

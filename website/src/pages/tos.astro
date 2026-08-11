@@ -1,0 +1,50 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Prose from "../components/Prose.astro";
+import { site } from "../data/site";
+---
+<Layout
+  title="terms of service"
+  description="The terms of service for using the adore Discord bot and website."
+>
+  <Prose heading="Terms of service" updated="August 2026">
+    <p>
+      By adding or using <strong>{site.name}</strong> (the "bot") or this website,
+      you agree to these terms. If you do not agree, do not use the bot.
+    </p>
+
+    <h2>Acceptable use</h2>
+    <ul>
+      <li>Do not use the bot to break Discord's Terms of Service or Community Guidelines.</li>
+      <li>Do not abuse, overload, or attempt to disrupt the bot or its infrastructure.</li>
+      <li>Do not use the bot for harassment, illegal activity, or distributing harmful content.</li>
+    </ul>
+
+    <h2>Availability</h2>
+    <p>
+      The bot is provided "as is" and "as available". We may modify, suspend, or
+      discontinue features at any time without notice. We do not guarantee
+      uninterrupted or error-free operation.
+    </p>
+
+    <h2>Premium &amp; payments</h2>
+    <p>
+      Premium and Private Instance features may be offered for
+      a fee. Payments are processed by third-party providers. Open a ticket in
+      the support server to purchase or transfer a subscription. See our
+      <a href="/premium">premium page</a> and <a href="/refunds">refund policy</a> for details.
+    </p>
+
+    <h2>Liability</h2>
+    <p>
+      To the maximum extent permitted by law, we are not liable for any indirect,
+      incidental, or consequential damages arising from use of the bot.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions about these terms? Reach us in the
+      <a href={site.support} target="_blank" rel="noopener noreferrer">support server</a>.
+    </p>
+  </Prose>
+</Layout>

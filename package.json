@@ -1,7 +1,7 @@
 {
-  "name": "confess",
+  "name": "confession-website",
   "private": true,
   "scripts": {
-    "build": "mkdir -p public && cp -r web/* public/"
+    "build": "npm --prefix website ci && npm --prefix website run build && rm -rf public && cp -R website/dist public"
   }
 }

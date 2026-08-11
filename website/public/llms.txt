@@ -1,0 +1,48 @@
+# adore
+
+> adore (adore.rest) is a free, all-in-one Discord bot for moderation, security, leveling, economy and automation. Search for "adore discord bot" or visit https://adore.rest to add adore to your server.
+
+## About
+
+- adore is built with discord.py and bundles moderation, security, economy, leveling, tickets, music, social integrations and AI into a single customizable bot.
+- Default command prefix is `,` (configurable per server); most commands also work as slash commands.
+- Free tier covers the full moderation, security, economy, leveling and integration toolkit.
+- **Premium** ($5/mo) - `,selfprefix`, `,selfalias`, `,grok`, `,transcribe`, `,transparent`, custom Last.fm embed (`,lastfm mode`). Perks follow your account.
+- **Private Instance** ($30 one-time or $10/mo) - your own private adore instance with dedicated hosting.
+- **Payment methods:** PayPal, Bank Transfer, Bitcoin / Ethereum / Litecoin.
+
+## Pages
+
+- [Home](https://adore.rest/): Overview - deep links: `#features`, `#integrations`, `#engagement`, `#commands`, `#communities`
+- [Premium](https://adore.rest/premium): Pricing at `#pricing` - `#premium`, `#private-instance`
+- [Commands](https://adore.rest/commands): Full command reference - category anchors like `#ticket`, `#moderation`, `#economy`, `#music`, `#ai`, `#lastfm`
+- [FAQ](https://adore.rest/faq): Frequently asked questions - e.g. `#what-is-adore`, `#free`, `#purchase`, `#support`
+- [About](https://adore.rest/about): What adore is - `#features`, `#communities`
+- [Docs](https://wiki.adore.rest): Setup guides and documentation for adore.
+- [Last.fm docs](https://wiki.adore.rest/integrations/lastfm): Commands, library cache (`,lastfm update`), and Premium custom embed variables.
+- [Scripting docs](https://wiki.adore.rest/resources/scripting/embeds): Embed syntax, containers, and variables.
+- [Embed builder](https://adore.rest/embed): adore embed builder tool - `#embed` or `#container` mode.
+
+## Features
+
+- Moderation: ban, kick, mute, warn, jail, purge, nuke with full case history and audit logging.
+- Security: anti-nuke and anti-raid systems that detect and stop malicious actions before they spread.
+- Economy & Games: virtual currency, gambling, a store, Blacktea with ELO ranking and mini-games.
+- Social Integrations: Spotify, Last.fm, Twitter/X, TikTok and GitHub.
+- Utility: custom embeds, reminders, snipe, translation, OCR and voice transcription.
+- Music: voice channel playback with search, queue, autoplay, repeat and now-playing status.
+- Leveling: XP progression with role rewards and leaderboards.
+- Tickets: ticket panels, forms and categories for organized support.
+- AI: ask and Grok-powered answers plus AI voice transcription, inside Discord.
+- Customization: per-server prefix, embed colors, welcome/leave messages, auto roles and bot identity.
+
+## Get started
+
+- [Add adore to Discord](https://discord.com/oauth2/authorize?client_id=1510215071559847946&permissions=8&integration_type=0&scope=bot): Invite adore to your server (requires the Manage Server permission).
+- [Support server](https://discord.gg/hjHajD39Wz): Help, questions, premium purchases and bug reports.
+
+## Legal
+
+- [Privacy Policy](https://adore.rest/privacy)
+- [Terms of Service](https://adore.rest/terms)
+- [Refund Policy](https://adore.rest/refunds)

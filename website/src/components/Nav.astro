@@ -1,0 +1,190 @@
+---
+import { site } from "../data/site";
+
+const links = [
+  { label: "Commands", href: "/commands" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Status", href: "/status" },
+  { label: "Support", href: site.support, external: true },
+];
+---
+<header id="site-nav" class="site-nav absolute inset-x-0 top-0 z-50 pt-[1.05rem] sm:pt-[1.575rem]">
+  <nav class="nav-shell relative mx-auto grid min-h-[52px] max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-2 sm:px-6" aria-label="Primary">
+    <a
+      href="/"
+      class="nav-logo relative z-10 inline-flex shrink-0 items-center gap-2 justify-self-start text-base font-semibold tracking-tight sm:gap-2.5 sm:text-lg"
+      aria-label={`${site.name} home`}
+    >
+      <img
+        src="/brand/adore_logo.png?v=1"
+        alt=""
+        width="28"
+        height="28"
+        class="h-7 w-7 object-contain"
+      />
+      <span translate="no">{site.name}</span>
+    </a>
+
+    <div class="nav-pill col-start-2 hidden items-center justify-self-center gap-0.5 rounded-full border border-[var(--color-line)]/80 bg-[var(--color-bg-soft)]/90 p-1 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-md sm:flex">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            target={l.external ? "_blank" : undefined}
+            rel={l.external ? "noopener noreferrer" : undefined}
+            class="nav-link pointer-events-auto rounded-full px-3.5 py-1.5 text-[13px] text-[var(--color-dim)] transition-colors hover:text-[var(--color-fg)]"
+          >
+            {l.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="relative z-10 col-start-3 flex items-center justify-self-end gap-2">
+      <button
+        type="button"
+        id="nav-menu-btn"
+        class="nav-menu-btn grid h-9 w-9 place-items-center rounded-full border border-[var(--color-line)]/80 bg-[var(--color-bg-soft)]/90 text-[var(--color-dim)] shadow-[0_4px_20px_rgba(0,0,0,0.25)] backdrop-blur-md sm:hidden"
+        aria-expanded="false"
+        aria-controls="nav-mobile-menu"
+        aria-label="Open menu"
+      >
+        <svg id="nav-icon-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
+        </svg>
+        <svg id="nav-icon-close" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+        </svg>
+      </button>
+
+      <a
+        href="https://dash.adore.rest"
+        class="nav-invite inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 leading-none sm:px-4"
+        aria-label="Dashboard"
+      >
+        <svg class="h-4 w-4 shrink-0" viewBox="0 -28.5 256 256" fill="currentColor" aria-hidden="true">
+          <path d="M216.856 16.597A208.502 208.502 0 0 0 164.042 0c-2.275 4.113-4.933 9.645-6.766 14.046-19.692-2.961-39.203-2.961-58.533 0-1.832-4.4-4.55-9.933-6.846-14.046a207.809 207.809 0 0 0-52.855 16.638C5.618 67.147-3.443 116.4 1.087 164.956c22.169 16.555 43.653 26.612 64.775 33.193A161.094 161.094 0 0 0 79.735 175.3a136.413 136.413 0 0 1-21.846-10.632 108.636 108.636 0 0 0 5.356-4.237c42.122 19.702 87.89 19.702 129.51 0a131.66 131.66 0 0 0 5.355 4.237 136.07 136.07 0 0 1-21.886 10.653c4.006 8.02 8.638 15.67 13.873 22.848 21.142-6.58 42.646-16.637 64.815-33.213 5.316-56.288-9.08-105.09-38.056-148.36ZM85.474 135.09c-12.645 0-23.015-11.805-23.015-26.18s10.148-26.2 23.015-26.2 23.236 11.804 23.015 26.2c0 14.375-10.148 26.18-23.015 26.18Zm85.051 0c-12.645 0-23.014-11.805-23.014-26.18s10.148-26.2 23.014-26.2c12.866 0 23.236 11.804 23.015 26.2 0 14.375-10.149 26.18-23.015 26.18Z" />
+        </svg>
+        <span class="text-xs font-bold sm:text-[13px]">Dashboard</span>
+      </a>
+    </div>
+  </nav>
+
+  <div id="nav-mobile-menu" class="nav-mobile-menu hidden border-t border-[var(--color-line)]/60 sm:hidden" hidden>
+    <div class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            target={l.external ? "_blank" : undefined}
+            rel={l.external ? "noopener noreferrer" : undefined}
+            class="nav-mobile-link rounded-xl px-3 py-2.5 text-sm text-[var(--color-dim)]"
+          >
+            {l.label}
+          </a>
+        ))
+      }
+      <a
+        href="https://dash.adore.rest"
+        class="nav-mobile-dashboard mt-1 inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white"
+      >
+        <svg class="h-4 w-4 shrink-0" viewBox="0 -28.5 256 256" fill="currentColor" aria-hidden="true">
+          <path d="M216.856 16.597A208.502 208.502 0 0 0 164.042 0c-2.275 4.113-4.933 9.645-6.766 14.046-19.692-2.961-39.203-2.961-58.533 0-1.832-4.4-4.55-9.933-6.846-14.046a207.809 207.809 0 0 0-52.855 16.638C5.618 67.147-3.443 116.4 1.087 164.956c22.169 16.555 43.653 26.612 64.775 33.193A161.094 161.094 0 0 0 79.735 175.3a136.413 136.413 0 0 1-21.846-10.632 108.636 108.636 0 0 0 5.356-4.237c42.122 19.702 87.89 19.702 129.51 0a131.66 131.66 0 0 0 5.355 4.237 136.07 136.07 0 0 1-21.886 10.653c4.006 8.02 8.638 15.67 13.873 22.848 21.142-6.58 42.646-16.637 64.815-33.213 5.316-56.288-9.08-105.09-38.056-148.36ZM85.474 135.09c-12.645 0-23.015-11.805-23.015-26.18s10.148-26.2 23.015-26.2 23.236 11.804 23.015 26.2c0 14.375-10.148 26.18-23.015 26.18Zm85.051 0c-12.645 0-23.014-11.805-23.014-26.18s10.148-26.2 23.014-26.2c12.866 0 23.236 11.804 23.015 26.2 0 14.375-10.149 26.18-23.015 26.18Z" />
+        </svg>
+        Dashboard
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* No full-width bar: the logo, center pill and invite float separately.
+     The nav is absolutely positioned at the top of the page, so it simply
+     scrolls away with the content instead of sticking or auto-hiding. */
+  .site-nav {
+    background: transparent;
+  }
+
+  .nav-logo {
+    color: var(--color-fg);
+    transition: color 0.2s ease;
+  }
+  .nav-logo:hover {
+    color: var(--color-premium);
+  }
+
+  .nav-link:hover,
+  .nav-mobile-link:hover {
+    background: color-mix(in srgb, var(--color-glow) 12%, transparent);
+    color: var(--color-fg);
+  }
+
+  /* Discord brand colour, fixed across every theme */
+  .nav-invite {
+    color: #fff;
+    background: #5865f2;
+    border: 1px solid #5865f2;
+    font-weight: 700;
+    box-shadow: inset 0px 1px 0px 0.1px rgba(163, 171, 255, 0.5);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .nav-invite:hover {
+    background: #4752c4;
+    border-color: #4752c4;
+  }
+
+  .nav-mobile-menu {
+    background: color-mix(in srgb, var(--color-bg) 96%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .nav-mobile-dashboard {
+    background: #5865f2;
+    font-weight: 700;
+    box-shadow: inset 0px 1px 0px 0.1px rgba(163, 171, 255, 0.5);
+    transition: background-color 0.2s ease;
+  }
+  .nav-mobile-dashboard:hover {
+    background: #4752c4;
+  }
+
+  .nav-menu-btn[aria-expanded="true"] {
+    border-color: color-mix(in srgb, var(--color-glow) 40%, var(--color-line));
+    color: var(--color-fg);
+  }
+</style>
+
+<script>
+  const menuBtn = document.getElementById("nav-menu-btn");
+  const mobileMenu = document.getElementById("nav-mobile-menu");
+  const iconOpen = document.getElementById("nav-icon-open");
+  const iconClose = document.getElementById("nav-icon-close");
+
+  function closeMenu() {
+    if (!menuBtn || !mobileMenu) return;
+    menuBtn.setAttribute("aria-expanded", "false");
+    menuBtn.setAttribute("aria-label", "Open menu");
+    mobileMenu.hidden = true;
+    mobileMenu.classList.add("hidden");
+    iconOpen?.classList.remove("hidden");
+    iconClose?.classList.add("hidden");
+  }
+
+  menuBtn?.addEventListener("click", () => {
+    const open = menuBtn.getAttribute("aria-expanded") !== "true";
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    mobileMenu!.hidden = !open;
+    mobileMenu!.classList.toggle("hidden", !open);
+    iconOpen?.classList.toggle("hidden", open);
+    iconClose?.classList.toggle("hidden", !open);
+  });
+
+  mobileMenu?.querySelectorAll("a").forEach((a) => {
+    a.addEventListener("click", closeMenu);
+  });
+</script>

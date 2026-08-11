@@ -1,0 +1,23 @@
+{
+  "name": "confess.adore.rest",
+  "short_name": "confession",
+  "description": "Confession is Discord's anonymous confession bot. Members submit privately, staff can review, and posts stay anonymous \u2014 with replies, filters, and clean setup.",
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a",
+  "display": "standalone"
+}

@@ -1,0 +1,81 @@
+---
+interface Props {
+  href: string;
+  variant?: "primary" | "secondary" | "glossy";
+  class?: string;
+  external?: boolean;
+}
+const {
+  href,
+  variant = "primary",
+  class: className = "",
+  external = false,
+} = Astro.props;
+
+const base =
+  "inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium [touch-action:manipulation] transition-[background-color,border-color,color,opacity] duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-fg)]";
+
+const variants = {
+  primary:
+    "border border-[var(--color-glow)] bg-[var(--color-glow)] !text-[var(--color-fg)] hover:opacity-90",
+  secondary:
+    "border border-[var(--color-line)] bg-[var(--color-surface)] !text-[var(--color-fg)] hover:border-[var(--color-glow)]/40 hover:bg-[var(--color-bg-soft)]",
+  glossy:
+    "btn-glossy relative h-[50px] !rounded-full !px-5 !py-0 !text-[16px] !font-semibold tracking-tight",
+};
+
+const rel = external ? "noopener noreferrer" : undefined;
+const target = external ? "_blank" : undefined;
+---
+<a
+  href={href}
+  class={`${base} ${variants[variant]} ${className}`}
+  rel={rel}
+  target={target}
+>
+  <slot />
+</a>
+
+<style is:global>
+  /* Clean dark pill with a subtle accent-tinted vertical gradient. */
+  .btn-glossy {
+    color: #fff;
+    background-color: var(--color-bg-soft);
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-glow) 30%, transparent) 0%,
+      color-mix(in srgb, var(--color-glow) 15%, transparent) 100%
+    );
+    border: 1px solid color-mix(in srgb, var(--color-glow) 20%, var(--color-line));
+    transition:
+      background-image 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.15s ease;
+  }
+
+  .btn-glossy:hover {
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-glow) 32%, transparent) 0%,
+      color-mix(in srgb, var(--color-glow) 16%, transparent) 100%
+    );
+    border-color: color-mix(in srgb, var(--color-glow) 40%, var(--color-line));
+  }
+
+  .btn-glossy:active {
+    transform: scale(0.98);
+  }
+
+  /* Light blue-grey icons, matching the reference. */
+  .btn-glossy .btn-glossy-icon {
+    color: #b2ccd5;
+    flex: none;
+  }
+
+  .btn-glossy .btn-glossy-arrow {
+    transition: transform 0.2s ease;
+  }
+  .btn-glossy:hover .btn-glossy-arrow {
+    transform: translateX(2px);
+  }
+</style>

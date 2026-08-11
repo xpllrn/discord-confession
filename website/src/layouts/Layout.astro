@@ -1,0 +1,198 @@
+---
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import ConsentBanner from "../components/ConsentBanner.astro";
+import { site, seoKeywords } from "../data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  keywords?: string;
+  /** Extra JSON-LD objects to inject (e.g. FAQPage, BreadcrumbList). */
+  structuredData?: Record<string, unknown>[];
+  noindex?: boolean;
+  /** Home hero sits under the nav without extra main offset. */
+  heroOverlay?: boolean;
+}
+
+const {
+  title = site.name,
+  description = site.description,
+  image = site.shareImage,
+  keywords = seoKeywords,
+  structuredData = [],
+  noindex = false,
+  heroOverlay = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, site.url).href;
+
+// Derive the OG image MIME type from the file extension.
+const ogImageType = image.endsWith(".gif")
+  ? "image/gif"
+  : image.endsWith(".jpg") || image.endsWith(".jpeg")
+    ? "image/jpeg"
+    : "image/png";
+
+const isShareLogo = image.includes("og-share") || image.includes("adore_logo");
+const ogImageWidth = isShareLogo ? "1200" : "1280";
+const ogImageHeight = isShareLogo ? "1200" : "685";
+const twitterCard = isShareLogo ? "summary" : "summary_large_image";
+
+const appJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: site.name,
+  applicationCategory: "Discord Bot",
+  operatingSystem: "Discord",
+  url: site.url,
+  description: site.description,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: site.name,
+  alternateName: ["adore bot", "adore discord bot", site.domain],
+  url: site.url,
+  description: site.description,
+  inLanguage: "en",
+};
+
+const allJsonLd = [websiteJsonLd, appJsonLd, ...structuredData];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Consent Mode v2 defaults (must run BEFORE any Google tag) -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      // Read a previously saved choice (first-party, no cookies needed yet).
+      var __adoreConsent = null;
+      try {
+        __adoreConsent = JSON.parse(localStorage.getItem("adore-consent") || "null");
+      } catch (e) {}
+
+      var granted = __adoreConsent && __adoreConsent.analytics ? "granted" : "denied";
+      var adGranted = __adoreConsent && __adoreConsent.ads ? "granted" : "denied";
+
+      // Default everything to denied until the user decides (EEA-safe).
+      gtag("consent", "default", {
+        ad_storage: adGranted,
+        ad_user_data: adGranted,
+        ad_personalization: adGranted,
+        analytics_storage: granted,
+        functionality_storage: "granted",
+        security_storage: "granted",
+        wait_for_update: 500,
+      });
+      gtag("set", "url_passthrough", true);
+      gtag("set", "ads_data_redaction", true);
+      gtag("js", new Date());
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-86SRWCMNJP"></script>
+    <script is:inline>
+      gtag("config", "G-86SRWCMNJP");
+    </script>
+
+    <!-- Google AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-5848662426961056" />
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5848662426961056"
+      crossorigin="anonymous"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260811b" sizes="96x96" />
+    <link rel="shortcut icon" href="/favicon.png?v=20260811b" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260811b" />
+    <meta name="apple-mobile-web-app-title" content="adore" />
+    <link rel="manifest" href="/site.webmanifest?v=20260811b" />
+
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="text/plain" title="LLM site summary" href={`${site.url}/llms.txt`} />
+    <meta name="theme-color" content="#050505" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, site.url).href} />
+    <meta property="og:image:type" content={ogImageType} />
+    <meta property="og:image:width" content={ogImageWidth} />
+    <meta property="og:image:height" content={ogImageHeight} />
+    <meta property="og:image:alt" content={`${site.name} logo`} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, site.url).href} />
+    <meta name="twitter:image:alt" content={`${site.name} logo`} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;600&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    {allJsonLd.map((obj) => (
+      <script type="application/ld+json" set:html={JSON.stringify(obj)} />
+    ))}
+  </head>
+  <body>
+    <div class="site-stars" aria-hidden="true"></div>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:border focus:border-[var(--color-accent)] focus:bg-[var(--color-bg)] focus:px-3 focus:py-1.5 focus:text-sm"
+    >
+      Skip to content
+    </a>
+    <Nav />
+    <main id="main" class:list={[!heroOverlay && "page-main"]}>
+      <slot />
+    </main>
+    <Footer />
+    <ConsentBanner />
+
+    <script>
+      import { initSitePolish } from "../scripts/site-polish";
+      initSitePolish();
+    </script>
+  </body>
+</html>

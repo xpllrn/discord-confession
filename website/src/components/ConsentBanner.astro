@@ -1,0 +1,109 @@
+---
+// Cookie consent banner - matches site island / accent language.
+---
+<div
+  id="consent"
+  class="fixed inset-x-0 bottom-0 z-[90] hidden px-4 pb-4 sm:bottom-5 sm:px-6"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="consent-title"
+  aria-describedby="consent-desc"
+>
+  <div
+    class="consent-island mx-auto flex max-w-3xl flex-col gap-4 rounded-[1.75rem] border border-[var(--color-line)] bg-[var(--color-bg)]/90 px-5 py-4 shadow-[0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between sm:px-6"
+  >
+    <div class="min-w-0">
+      <p id="consent-title" class="text-sm font-semibold tracking-tight">
+        Cookies
+      </p>
+      <p id="consent-desc" class="mt-1 text-xs leading-relaxed text-[var(--color-dim)]">
+        We use cookies for analytics and ads to keep adore running. You can
+        accept, reject, or read our
+        <a href="/privacy" class="text-[var(--color-premium)] underline underline-offset-2 hover:opacity-90">privacy policy</a>.
+      </p>
+    </div>
+
+    <div class="flex flex-none flex-wrap gap-2">
+      <button type="button" data-consent="reject" class="ui-btn !px-4 !py-2 !text-xs">
+        Reject
+      </button>
+      <button type="button" data-consent="accept" class="ui-btn ui-btn-solid !px-4 !py-2 !text-xs">
+        Accept all
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var KEY = "adore-consent";
+    var el = document.getElementById("consent");
+    if (!el) return;
+
+    function gtagSafe() {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag =
+        window.gtag ||
+        function () {
+          window.dataLayer.push(arguments);
+        };
+      return window.gtag;
+    }
+
+    function apply(choice) {
+      var g = gtagSafe();
+      var ads = choice.ads ? "granted" : "denied";
+      var analytics = choice.analytics ? "granted" : "denied";
+      g("consent", "update", {
+        ad_storage: ads,
+        ad_user_data: ads,
+        ad_personalization: ads,
+        analytics_storage: analytics,
+      });
+    }
+
+    function save(choice) {
+      try {
+        localStorage.setItem(KEY, JSON.stringify(choice));
+      } catch (e) {}
+    }
+
+    function hide() {
+      el.classList.add("hidden");
+    }
+    function show() {
+      el.classList.remove("hidden");
+    }
+
+    function decide(accepted) {
+      var choice = { ads: accepted, analytics: accepted, ts: Date.now() };
+      save(choice);
+      apply(choice);
+      hide();
+    }
+
+    el.querySelector('[data-consent="accept"]').addEventListener("click", function () {
+      decide(true);
+    });
+    el.querySelector('[data-consent="reject"]').addEventListener("click", function () {
+      decide(false);
+    });
+
+    var prior = null;
+    try {
+      prior = JSON.parse(localStorage.getItem(KEY) || "null");
+    } catch (e) {}
+    if (!prior) show();
+
+    window.openConsent = show;
+  })();
+</script>
+
+<style>
+  .consent-island {
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.55),
+      0 0 0 1px color-mix(in srgb, var(--color-glow) 10%, transparent),
+      0 0 40px color-mix(in srgb, var(--color-glow) 6%, transparent);
+  }
+</style>

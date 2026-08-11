@@ -1,0 +1,78 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../data/site";
+import { commands, totalAll, categories } from "../data/commands";
+
+const description = `All public commands for ${site.name} on Discord.`;
+---
+<Layout title="commands" description={description}>
+  <section class="mx-auto max-w-4xl px-5 pb-24 pt-28 sm:px-8">
+    <p class="text-xs uppercase tracking-[0.18em] text-[var(--color-faint)]">commands</p>
+    <h1 class="mt-3 text-4xl font-semibold tracking-tight text-[var(--color-fg)]">Commands</h1>
+    <p class="mt-3 max-w-xl text-sm text-[var(--color-dim)]">
+      {totalAll} public commands. Search or filter — developer tools stay out of the list.
+    </p>
+
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <input id="cmd-search" class="cmd-input" type="search" placeholder="Search commands…" autocomplete="off" />
+      <select id="cmd-cat" class="cmd-input sm:max-w-[14rem]">
+        <option value="all">All categories</option>
+        {categories.map((c) => <option value={c}>{c}</option>)}
+      </select>
+    </div>
+    <p class="mt-3 text-sm text-[var(--color-faint)]">Showing <span id="cmd-count">{totalAll}</span></p>
+    <p id="cmd-empty" class="mt-8 hidden text-sm text-[var(--color-faint)]">No commands match that search.</p>
+
+    <ul id="cmd-list" class="mt-6 divide-y divide-[var(--color-line)] border-y border-[var(--color-line)]">
+      {commands.map((c) => (
+        <li class="cmd-row py-4" data-name={c.name} data-desc={c.description} data-cat={c.category}>
+          <div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+            <code class="text-[0.95rem] text-[var(--color-premium)]">{c.name}</code>
+            <span class="text-xs uppercase tracking-[0.08em] text-[var(--color-faint)]">{c.category}</span>
+          </div>
+          <p class="mt-1 text-sm text-[var(--color-dim)]">{c.description}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Layout>
+
+<style>
+  .cmd-input {
+    width: 100%;
+    appearance: none;
+    border: 1px solid var(--color-line);
+    background: var(--color-bg-soft);
+    color: var(--color-fg);
+    border-radius: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    font: inherit;
+  }
+  .cmd-input:focus { outline: none; border-color: var(--color-accent); }
+</style>
+
+<script is:inline>
+  (() => {
+    const q = document.getElementById("cmd-search");
+    const cat = document.getElementById("cmd-cat");
+    const list = document.getElementById("cmd-list");
+    const count = document.getElementById("cmd-count");
+    const empty = document.getElementById("cmd-empty");
+    const rows = [...list.querySelectorAll(".cmd-row")];
+    const sync = () => {
+      const needle = (q.value || "").trim().toLowerCase();
+      const c = cat.value;
+      let n = 0;
+      for (const row of rows) {
+        const hay = (row.dataset.name + " " + row.dataset.desc).toLowerCase();
+        const ok = (!needle || hay.includes(needle)) && (c === "all" || row.dataset.cat === c);
+        row.hidden = !ok;
+        if (ok) n += 1;
+      }
+      count.textContent = String(n);
+      empty.hidden = n !== 0;
+    };
+    q.addEventListener("input", sync);
+    cat.addEventListener("change", sync);
+  })();
+</script>

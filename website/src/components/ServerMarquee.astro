@@ -1,0 +1,145 @@
+---
+import { guilds } from "../data/guilds";
+
+// Duplicate the list so the marquee loops seamlessly.
+const row = [...guilds, ...guilds];
+
+function fmt(n: number): string {
+  return n.toLocaleString("en-US");
+}
+---
+
+<section class="relative mt-20 sm:mt-28">
+  <p class="text-center text-[16px] leading-[175%] text-balance text-[var(--color-dim)] sm:text-[18px]">
+    Powering
+    <span class="count-up font-semibold text-[var(--color-fg)] tabular-nums" data-target="2" data-suffix="k+">0k+</span>
+    <span class="text-[var(--color-primary-soft)]">users</span>
+    across
+    <span class="count-up font-semibold text-[var(--color-fg)] tabular-nums" data-target="5" data-suffix="+">0+</span>
+    <span class="text-[var(--color-primary-soft)]">communities</span>
+  </p>
+
+  <div class="srv-marquee relative mt-10 w-full overflow-hidden">
+    <div class="srv-fade srv-fade--left" aria-hidden="true"></div>
+    <div class="srv-fade srv-fade--right" aria-hidden="true"></div>
+
+    <div class="srv-track">
+      {row.map((g, i) => (
+        <div class="srv-item" aria-hidden={i >= guilds.length}>
+          <img
+            src={g.icon ?? "/brand/adore_logo.png?v=1"}
+            alt=""
+            width="64"
+            height="64"
+            loading="lazy"
+            class="srv-item__icon"
+          />
+          <div class="srv-item__text">
+            <p class="srv-item__name">{g.name}</p>
+            {g.members != null && (
+              <p class="srv-item__members">{fmt(g.members)} members</p>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Fade both ends into the background so the row is cut off, not edge-to-edge */
+  .srv-marquee {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  }
+
+  .srv-fade {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .srv-fade--left {
+    left: 0;
+    background: linear-gradient(90deg, var(--color-bg), transparent);
+  }
+  .srv-fade--right {
+    right: 0;
+    background: linear-gradient(270deg, var(--color-bg), transparent);
+  }
+
+  .srv-track {
+    display: flex;
+    width: max-content;
+    gap: 34px;
+    animation: srv-scroll 55s linear infinite;
+    will-change: transform;
+  }
+
+  .srv-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+
+  .srv-item__icon {
+    height: 52px;
+    width: 52px;
+    border-radius: 9999px;
+    object-fit: cover;
+    background: var(--color-surface);
+  }
+
+  .srv-item__name {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    font-size: 16px;
+    color: var(--color-fg);
+    white-space: nowrap;
+  }
+
+  .srv-item__members {
+    font-size: 13px;
+    color: var(--color-faint);
+    white-space: nowrap;
+  }
+
+  @keyframes srv-scroll {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .srv-track { animation: none; }
+  }
+</style>
+
+<script>
+  // Count the headline numbers up on load (~2s, ease-out).
+  function animateCount(el: HTMLElement) {
+    const target = parseFloat(el.dataset.target || "0");
+    const suffix = el.dataset.suffix || "";
+    const duration = 2000;
+    const start = performance.now();
+    function tick(now: number) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(eased * target) + suffix;
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = target + suffix;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll<HTMLElement>(".count-up").forEach((el) => {
+    if (reduce) {
+      el.textContent = (el.dataset.target || "0") + (el.dataset.suffix || "");
+    } else {
+      animateCount(el);
+    }
+  });
+</script>

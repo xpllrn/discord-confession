@@ -1,0 +1,9 @@
+# Cloudflare Pages redirects
+/invite   https://discord.com/oauth2/authorize?client_id=1508460938255138981&permissions=274877974528&scope=bot%20applications.commands   302
+/support  https://discord.gg/PNDPCfJPFe   302
+/discord  https://discord.gg/PNDPCfJPFe   302
+/docs     /faq   302
+/terms    /tos   302
+
+# API proxy
+/api/*  https://api.confess.adore.rest/api/:splat  200

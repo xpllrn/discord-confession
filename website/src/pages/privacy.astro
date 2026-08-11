@@ -1,0 +1,47 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Prose from "../components/Prose.astro";
+import { site } from "../data/site";
+---
+<Layout
+  title="privacy"
+  description="How the adore Discord bot collects, uses, and protects your data."
+>
+  <Prose heading="privacy policy" updated="June 2026">
+    <p>
+      This policy explains what data <strong>{site.name}</strong> collects and how
+      it is used. We collect only what is needed to provide the bot's features.
+    </p>
+
+    <h2>what we store</h2>
+    <ul>
+      <li>Server and channel IDs, and configuration you set (prefix, colors, settings).</li>
+      <li>User IDs for features you use (economy balances, levels, reminders, warnings).</li>
+      <li>Message content only when required by a command you run (e.g. embeds, snipe), and only as long as needed.</li>
+    </ul>
+
+    <h2>what we do not do</h2>
+    <ul>
+      <li>We do not sell your data.</li>
+      <li>We do not log or read messages outside of commands you explicitly invoke.</li>
+      <li>We do not share data with third parties except integrations you opt into (e.g. Spotify, Last.fm).</li>
+    </ul>
+
+    <h2>third-party services</h2>
+    <p>
+      Optional integrations (Spotify, Last.fm, AI providers) process data
+      according to their own privacy policies when you connect or use them.
+    </p>
+
+    <h2>data removal</h2>
+    <p>
+      You can request deletion of your data, or your server's data, by contacting
+      us in the
+      <a href={site.support} target="_blank" rel="noopener noreferrer">support server</a>.
+      Removing the bot stops further data collection for your server.
+    </p>
+
+    <h2>changes</h2>
+    <p>We may update this policy. Material changes will be announced in the support server.</p>
+  </Prose>
+</Layout>
