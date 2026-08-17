@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def is_bot_owner():
     async def predicate(interaction: discord.Interaction) -> bool:
-        if not Config.BOT_OWNER_ID or interaction.user.id != Config.BOT_OWNER_ID:
+        if not Config.BOT_OWNER_IDS or interaction.user.id not in Config.BOT_OWNER_IDS:
             if not interaction.response.is_done():
                 await interaction.response.send_message(
                     f"{DENY} This command is restricted to the bot owner.",
